@@ -1,0 +1,15 @@
+AllCops:
+  Includes:
+    - Gemfile
+    - Rakefile
+  Excludes:
+    - vendor/*
+
+StringLiterals:
+  EnforcedStyle: double_quotes
+
+LineLength:
+  Max: 99
+
+Documentation:
+  Enabled: false
