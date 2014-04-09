@@ -1,4 +1,7 @@
-require "metamorph/rewrite"
+require "metamorph/rule"
+require "metamorph/node"
+require "metamorph/variable"
+
 require "parser/current"
 require "unparser"
 
