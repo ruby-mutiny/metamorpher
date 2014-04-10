@@ -5,7 +5,7 @@ require "metamorpher/no_match"
 module Metamorpher
   class Node
     extend Attributable
-    attributes :type, children: []
+    attributes :name, children: []
 
     attr_accessor :parent
 
@@ -16,14 +16,14 @@ module Metamorpher
 
     def inspect
       if children.empty?
-        "#{type}"
+        "#{name}"
       else
-        "#{type}(#{children.map(&:inspect).join(', ')})"
+        "#{name}(#{children.map(&:inspect).join(', ')})"
       end
     end
 
     def match(other)
-      if type == other.type
+      if name == other.name
         children_match(other)
       else
         NoMatch.new
@@ -32,14 +32,14 @@ module Metamorpher
 
     def substitute(substitution)
       Node.new(
-        type: type,
+        name: name,
         children: children.map { |child| child.substitute(substitution) }
       )
     end
 
     def replace(child, replacement)
       Node.new(
-        type: type,
+        name: name,
         children: children.map { |original| original == child ? replacement : original }
       )
     end

@@ -10,11 +10,11 @@ module Metamorpher
   describe Node do
     describe "simple" do
       it "nodes should match asts" do
-        a = Node.new(type: :send, children: [Node.new(type: nil), Node.new(type: :a)])
-        b = Node.new(type: :send, children: [Node.new(type: nil), Node.new(type: :b)])
-        op = Node.new(type: :^)
+        a = Node.new(name: :send, children: [Node.new(name: nil), Node.new(name: :a)])
+        b = Node.new(name: :send, children: [Node.new(name: nil), Node.new(name: :b)])
+        op = Node.new(name: :^)
 
-        pattern = Node.new(type: :send, children: [a, op, b])
+        pattern = Node.new(name: :send, children: [a, op, b])
 
         ast = parse("a ^ b")
         result = pattern.match(ast)
@@ -23,11 +23,11 @@ module Metamorpher
       end
 
       it "nodes should return a negative result when there is no match" do
-        a = Node.new(type: :send, children: [Node.new(type: nil), Node.new(type: :a)])
-        b = Node.new(type: :send, children: [Node.new(type: nil), Node.new(type: :b)])
-        op = Node.new(type: :^)
+        a = Node.new(name: :send, children: [Node.new(name: nil), Node.new(name: :a)])
+        b = Node.new(name: :send, children: [Node.new(name: nil), Node.new(name: :b)])
+        op = Node.new(name: :^)
 
-        pattern = Node.new(type: :send, children: [a, op, b])
+        pattern = Node.new(name: :send, children: [a, op, b])
 
         ast = parse("a + b")
         result = pattern.match(ast)
@@ -38,9 +38,9 @@ module Metamorpher
       it "variables should capture the nodes that they match" do
         x = Variable.new(name: :x)
         y = Variable.new(name: :y)
-        op = Node.new(type: :^)
+        op = Node.new(name: :^)
 
-        pattern = Node.new(type: :send, children: [x, op, y])
+        pattern = Node.new(name: :send, children: [x, op, y])
 
         ast = parse("a ^ b")
         result = pattern.match(ast)
@@ -51,11 +51,11 @@ module Metamorpher
       end
 
       it "should capture all remaining children" do
-        type = Variable.new(name: :type)
-        method = Node.new(type: :find_by_name_and_birthday)
+        name = Variable.new(name: :name)
+        method = Node.new(name: :find_by_name_and_birthday)
         params = GreedyVariable.new(name: :params)
 
-        pattern = Node.new(type: :send, children: [type, method, params])
+        pattern = Node.new(name: :send, children: [name, method, params])
 
         ast = parse("Person.find_by_name_and_birthday(name, birthday)")
         result = pattern.match(ast)
@@ -69,8 +69,8 @@ module Metamorpher
       it "should rewrite top-level term" do
         x = Variable.new(name: :x)
         y = Variable.new(name: :y)
-        pattern = Node.new(type: :send, children: [x, Node.new(type: :^), y])
-        replacement = Node.new(type: :send, children: [x, Node.new(type: :+), y])
+        pattern = Node.new(name: :send, children: [x, Node.new(name: :^), y])
+        replacement = Node.new(name: :send, children: [x, Node.new(name: :+), y])
         rule = Rule.new(pattern: pattern, replacement: replacement)
 
         ast = parse("a ^ b")
@@ -82,8 +82,8 @@ module Metamorpher
       it "should rewrite a nested term" do
         x = Variable.new(name: :x)
         y = Variable.new(name: :y)
-        pattern = Node.new(type: :send, children: [x, Node.new(type: :^), y])
-        replacement = Node.new(type: :send, children: [x, Node.new(type: :+), y])
+        pattern = Node.new(name: :send, children: [x, Node.new(name: :^), y])
+        replacement = Node.new(name: :send, children: [x, Node.new(name: :+), y])
         rule = Rule.new(pattern: pattern, replacement: replacement)
 
         ast = parse("def foo; a ^ b; end")
@@ -95,31 +95,31 @@ module Metamorpher
       it "should be able to rewrite User.where(username: username).first" do
         ast = parse("User.where(username: username).first")
 
-        # TYPE.where(PARAMS).first -> TYPE.find_by(PARAMS)
-        # send(send(TYPE, where, PARAMS), first) -> send(TYPE, find_by, PARAMS)
+        # name.where(PARAMS).first -> name.find_by(PARAMS)
+        # send(send(name, where, PARAMS), first) -> send(name, find_by, PARAMS)
 
         pattern = Node.new(
-          type: :send,
+          name: :send,
           children: [
             Node.new(
-              type: :send,
+              name: :send,
               children: [
-                Variable.new(name: :type),
-                Node.new(type: :where),
+                Variable.new(name: :name),
+                Node.new(name: :where),
                 Variable.new(name: :params)
               ]
             ),
             Node.new(
-              type: :first
+              name: :first
             )
           ]
         )
 
         replacement = Node.new(
-          type: :send,
+          name: :send,
           children: [
-            Variable.new(name: :type),
-            Node.new(type: :find_by),
+            Variable.new(name: :name),
+            Node.new(name: :find_by),
             Variable.new(name: :params)
           ]
         )
@@ -133,24 +133,24 @@ module Metamorpher
       it "should allow replacements to be derived from pattern" do
         ast = parse("Person.pet")
 
-        # TYPE.METHOD -> TYPE.PLURAL where PLURAL derives METHOD.type + "s"
+        # name.METHOD -> name.PLURAL where PLURAL derives METHOD.name + "s"
 
         pattern = Node.new(
-          type: :send,
+          name: :send,
           children: [
-            Variable.new(name: :type),
+            Variable.new(name: :name),
             Variable.new(name: :method)
           ]
         )
 
         replacement = Node.new(
-          type: :send,
+          name: :send,
           children: [
-            Variable.new(name: :type),
+            Variable.new(name: :name),
             Derived.new(## is this not another rule?!
               base: [:method],
               derivation: lambda do |method|
-                Node.new(type: (method.type.to_s + "s").to_sym)
+                Node.new(name: (method.name.to_s + "s").to_sym)
               end
             )
           ]
@@ -165,55 +165,55 @@ module Metamorpher
       it "should be able to rewrite Asset.find_by_asset_id_and_object_path(id, path)" do
         ast = parse("Asset.find_by_asset_id_and_object_path(id, path)")
 
-        # send(TYPE, DYNAMIC_FINDER, PARAMS...)
-        #  where DYNAMIC_FINDER satisfies node.type.to_s.start_with?("find_by")
+        # send(name, DYNAMIC_FINDER, PARAMS...)
+        #  where DYNAMIC_FINDER satisfies node.name.to_s.start_with?("find_by")
         # ->
-        # send(TYPE, find_by, HASH)
+        # send(name, find_by, HASH)
         #  where HASH
         #    substitutes [DYNAMIC_FINDER, PARAMS]
         #    by hash(
         #      pair(sym(KEYS[0]), PARAM[0]),
         #      ...,
         #      pair(sym(KEYS[N]), PARAM[N])
-        #    ) where KEYS = DYNAMIC_FINDER.type["find_by_".length..-1].split("_and_")
+        #    ) where KEYS = DYNAMIC_FINDER.name["find_by_".length..-1].split("_and_")
 
         pattern = Node.new(
-          type: :send,
+          name: :send,
           children: [
-            Variable.new(name: :type),
+            Variable.new(name: :name),
             Variable.new(
               name: :dynamic_finder,
-              condition: ->(node) { node.type.to_s.start_with?("find_by") }
+              condition: ->(node) { node.name.to_s.start_with?("find_by") }
             ),
             GreedyVariable.new(name: :params)
           ]
         )
 
         replacement = Node.new(
-          type: :send,
+          name: :send,
           children: [
-            Variable.new(name: :type),
-            Node.new(type: :find_by),
+            Variable.new(name: :name),
+            Node.new(name: :find_by),
             Derived.new(## is this not a substitution
               base: [:dynamic_finder, :params],
               derivation: lambda do |dynamic_finder, params|
-                keys = dynamic_finder.type.to_s["find_by_".length..-1].split("_and_")
+                keys = dynamic_finder.name.to_s["find_by_".length..-1].split("_and_")
 
                 pairs = keys.zip(params).map do |key, param|
                   Node.new(
-                    type: :pair,
+                    name: :pair,
                     children: [
                       Node.new(
-                        type: :sym,
+                        name: :sym,
                         children: [
-                          Node.new(type: key.to_sym)
+                          Node.new(name: key.to_sym)
                         ]
                       ),
                       param
                     ]
                   )
                 end
-                Node.new(type: :hash, children: pairs)
+                Node.new(name: :hash, children: pairs)
 
               end
             )
@@ -233,9 +233,9 @@ module Metamorpher
 
     def import(ast)
       if ast.respond_to? :type
-        Node.new(type: ast.type, children: ast.children.map { |c| import(c) })
+        Node.new(name: ast.type, children: ast.children.map { |c| import(c) })
       else
-        Node.new(type: ast)
+        Node.new(name: ast)
       end
     end
   end

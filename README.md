@@ -56,9 +56,9 @@ Below is a very simple (and currently verbose) example that refactors Ruby on Ra
 
       def import(ast)
         if ast.respond_to? :type
-          Node.new(type: ast.type, children: ast.children.map { |c| import(c) })
+          Node.new(name: ast.type, children: ast.children.map { |c| import(c) })
         else
-          Node.new(type: ast)
+          Node.new(name: ast)
         end
       end
       
