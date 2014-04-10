@@ -1,7 +1,7 @@
 require "attributable"
 
 module Metamorph
-  class MatchResult
+  class Match
     extend Attributable
     attributes :root, substitution: {}
 
@@ -15,9 +15,9 @@ module Metamorph
 
     def combine(combinee)
       if combinee.matches?
-        MatchResult.new(root: root, substitution: combinee.substitution.merge(substitution))
+        Match.new(root: root, substitution: combinee.substitution.merge(substitution))
       else
-        NoMatchResult.new
+        NoMatch.new
       end
     end
   end

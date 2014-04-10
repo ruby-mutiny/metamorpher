@@ -1,6 +1,6 @@
 require "attributable"
-require "metamorph/match_result"
-require "metamorph/no_match_result"
+require "metamorph/match"
+require "metamorph/no_match"
 
 module Metamorph
   class Node
@@ -19,7 +19,7 @@ module Metamorph
       if type == other.type
         children_match(other)
       else
-        NoMatchResult.new
+        NoMatch.new
       end
     end
 
@@ -43,7 +43,7 @@ module Metamorph
       children
         .zip(other.children)
         .map { |child, other_child| child.match(other_child) }
-        .reduce(MatchResult.new(root: other), :combine)
+        .reduce(Match.new(root: other), :combine)
     end
   end
 end

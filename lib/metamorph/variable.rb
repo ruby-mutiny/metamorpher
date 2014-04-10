@@ -1,5 +1,5 @@
 require "attributable"
-require "metamorph/match_result"
+require "metamorph/match"
 
 module Metamorph
   class Variable
@@ -11,7 +11,7 @@ module Metamorph
     end
 
     def match(other)
-      MatchResult.new(substitution: { name => other })
+      Match.new(substitution: { name => other })
     end
 
     def substitute(substitution)

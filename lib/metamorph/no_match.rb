@@ -1,13 +1,13 @@
 require "attributable"
 
 module Metamorph
-  class NoMatchResult
+  class NoMatch
     def matches?
       false
     end
 
     def combine(_)
-      NoMatchResult.new
+      NoMatch.new
     end
   end
 end
