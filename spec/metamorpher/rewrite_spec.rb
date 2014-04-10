@@ -3,7 +3,6 @@ require "metamorpher/node"
 require "metamorpher/variable"
 
 require "parser/current"
-require "unparser"
 
 module Metamorpher
   describe Node do
@@ -116,16 +115,8 @@ module Metamorpher
       end
     end
 
-    def rewrite(code, rule)
-      unparse(rule.apply(parse(code)))
-    end
-
     def parse(source)
       import(Parser::CurrentRuby.parse(source))
-    end
-
-    def unparse(ast)
-      Unparser.unparse(ast)
     end
 
     def import(ast)
