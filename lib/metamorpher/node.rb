@@ -1,13 +1,16 @@
+require "attributable"
 require "metamorpher/match"
 require "metamorpher/no_match"
 
 module Metamorpher
   class Node
-    attr_reader :type, :children
+    extend Attributable
+    attributes :type, children: []
+
     attr_accessor :parent
 
-    def initialize(type: nil, children: [])
-      @type, @children = type, children
+    def initialize(attributes = {})
+      initialize_attributes(attributes)
       children.each { |child| child.parent = self }
     end
 
@@ -17,18 +20,6 @@ module Metamorpher
       else
         "#{type}(#{children.map(&:inspect).join(', ')})"
       end
-    end
-
-    def eql?(other)
-      other.is_a?(self.class) &&
-      type == other.type &&
-      children == other.children
-    end
-
-    alias_method "==", "eql?"
-
-    def hash
-      type.hash + children.hash
     end
 
     def match(other)
