@@ -35,7 +35,7 @@ module Metamorpher
         expect(result.matches?).to be_false
       end
 
-      it "variables should capture the Literals that they match" do
+      it "variables should capture the literals that they match" do
         x = Variable.new(name: :x)
         y = Variable.new(name: :y)
         op = Literal.new(name: :^)
