@@ -1,26 +1,12 @@
-require "attributable"
+require "metamorpher/variable"
 require "metamorpher/match"
 
 module Metamorpher
-  class GreedyVariable
-    extend Attributable
-    attributes :name, condition: ->(_) { true }
-    attr_accessor :parent
+  class GreedyVariable < Variable
+    specialises Variable
 
-    def inspect
-      name.to_s.upcase
-    end
-
-    def match(other)
-      if condition.call(other.and_younger_siblings)
-        Match.new(substitution: { name => other.and_younger_siblings })
-      else
-        NoMatch.new
-      end
-    end
-
-    def substitute(substitution)
-      substitution[name]
+    def capture(other)
+      other.and_younger_siblings
     end
   end
 end

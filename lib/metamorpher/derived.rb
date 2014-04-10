@@ -1,14 +1,8 @@
-require "attributable"
+require "metamorpher/node"
 
 module Metamorpher
-  class Derived
-    extend Attributable
+  class Derived < Node
     attributes :base, :derivation
-    attr_accessor :parent
-
-    def inspect
-      name.to_s.upcase
-    end
 
     def substitute(substitution)
       substitutes = substitution.values_at(*base)

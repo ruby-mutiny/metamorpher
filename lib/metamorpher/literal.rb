@@ -1,13 +1,11 @@
-require "attributable"
+require "metamorpher/node"
 require "metamorpher/match"
 require "metamorpher/no_match"
 
 module Metamorpher
-  class Literal
-    extend Attributable
-    attributes :name, children: []
-
-    attr_accessor :parent
+  class Literal < Node
+    specialises Node
+    attributes children: []
 
     def initialize(attributes = {})
       initialize_attributes(attributes)
@@ -42,14 +40,6 @@ module Metamorpher
         name: name,
         children: children.map { |original| original == child ? replacement : original }
       )
-    end
-
-    def and_younger_siblings
-      younger_siblings.unshift(self)
-    end
-
-    def younger_siblings
-      parent.children[parent.children.index(self) + 1..-1]
     end
 
     private

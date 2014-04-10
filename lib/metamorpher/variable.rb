@@ -1,26 +1,30 @@
-require "attributable"
+require "metamorpher/node"
 require "metamorpher/match"
 
 module Metamorpher
-  class Variable
-    extend Attributable
-    attributes :name, condition: ->(_) { true }
-    attr_accessor :parent
+  class Variable < Node
+    specialises Node
+    attributes condition: ->(_) { true }
 
     def inspect
       name.to_s.upcase
     end
 
+    def substitute(substitution)
+      substitution[name]
+    end
+
     def match(other)
-      if condition.call(other)
-        Match.new(substitution: { name => other })
+      captured = capture(other)
+      if condition.call(captured)
+        Match.new(substitution: { name => captured })
       else
         NoMatch.new
       end
     end
 
-    def substitute(substitution)
-      substitution[name]
+    def capture(other)
+      other
     end
   end
 end
