@@ -2,7 +2,7 @@ require "attributable"
 require "metamorpher/match"
 
 module Metamorpher
-  class Variable
+  class GreedyVariable
     extend Attributable
     attributes :name, condition: ->(_) { true }
     attr_accessor :parent
@@ -12,8 +12,8 @@ module Metamorpher
     end
 
     def match(other)
-      if condition.call(other)
-        Match.new(substitution: { name => other })
+      if condition.call(other.and_younger_siblings)
+        Match.new(substitution: { name => other.and_younger_siblings })
       else
         NoMatch.new
       end
