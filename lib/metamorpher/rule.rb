@@ -1,6 +1,6 @@
 require "attributable"
 
-module Metamorph
+module Metamorpher
   class Rule
     extend Attributable
     attributes :pattern, :replacement

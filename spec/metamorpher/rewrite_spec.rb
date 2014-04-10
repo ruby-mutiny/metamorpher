@@ -1,11 +1,11 @@
-require "metamorph/rule"
-require "metamorph/node"
-require "metamorph/variable"
+require "metamorpher/rule"
+require "metamorpher/node"
+require "metamorpher/variable"
 
 require "parser/current"
 require "unparser"
 
-module Metamorph
+module Metamorpher
   describe Node do
     describe "simple" do
       it "nodes should match asts" do

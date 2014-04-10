@@ -1,6 +1,6 @@
 require "attributable"
 
-module Metamorph
+module Metamorpher
   class Match
     extend Attributable
     attributes :root, substitution: {}

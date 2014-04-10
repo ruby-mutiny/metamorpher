@@ -1,7 +1,7 @@
 require "attributable"
-require "metamorph/match"
+require "metamorpher/match"
 
-module Metamorph
+module Metamorpher
   class Variable
     extend Attributable
     attributes :name

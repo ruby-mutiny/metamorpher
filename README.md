@@ -1,16 +1,16 @@
-# Metamorph [![Build Status](https://travis-ci.org/mutiny/metamorph.png)](https://travis-ci.org/mutiny/metamorph) [![Code Climate](https://codeclimate.com/github/mutiny/metamorph.png)](https://codeclimate.com/github/mutiny/metamorph) [![Dependency Status](https://gemnasium.com/mutiny/metamorph.png)](https://gemnasium.com/mutiny/metamorph) [![Coverage Status](https://coveralls.io/repos/mutiny/metamorph/badge.png?branch=master)](https://coveralls.io/r/mutiny/metamorph?branch=master)
+# Metamorpher [![Build Status](https://travis-ci.org/mutiny/metamorpher.png)](https://travis-ci.org/mutiny/metamorpher) [![Code Climate](https://codeclimate.com/github/mutiny/metamorpher.png)](https://codeclimate.com/github/mutiny/metamorpher) [![Dependency Status](https://gemnasium.com/mutiny/metamorpher.png)](https://gemnasium.com/mutiny/metamorpher) [![Coverage Status](https://coveralls.io/repos/mutiny/metamorpher/badge.png?branch=master)](https://coveralls.io/r/mutiny/metamorpher?branch=master)
 
 A library for transforming Ruby programs.
 
 ## Installation
 
-Metamorph is best used with the wonderful [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems.
+metamorpher is best used with the wonderful [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems.
 
 Add these line to your application's Gemfile:
 
     gem 'parser'
     gem 'unparser'
-    gem 'metamorph'
+    gem 'metamorpher'
 
 And then execute:
 
@@ -18,13 +18,13 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install metamorph
+    $ gem install metamorpher
 
 ## Basic usage
 
 Below is a very simple (and currently verbose) example that refactors Ruby on Rails programs from the form `MyType.where(params).first` to the form `MyType.find_by(params)`.
 
-    require "metamorph"
+    require "metamorpher"
     require "parser/current"
     require "unparser"
     
@@ -43,7 +43,7 @@ Below is a very simple (and currently verbose) example that refactors Ruby on Ra
       
       ## TODO make import part of the library, and then uncomment the following version of parse
       ## def parse(source)
-      ##   Metamorph::Parser.import(Parser::CurrentRuby.parse(source))
+      ##   Metamorpher::Parser.import(Parser::CurrentRuby.parse(source))
       ## end
       
       def parse(source)
@@ -69,7 +69,7 @@ Below is a very simple (and currently verbose) example that refactors Ruby on Ra
         #   replacement = TYPE.find_by(PARAMS)
         #   rule = pattern -> replacement
         #
-        # A better interface will be added in a future version of metamorph!
+        # A better interface will be added in a future version of metamorpher!
     
         pattern = Node.new(
           type: :send, 

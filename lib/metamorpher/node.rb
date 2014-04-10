@@ -1,8 +1,8 @@
 require "attributable"
-require "metamorph/match"
-require "metamorph/no_match"
+require "metamorpher/match"
+require "metamorpher/no_match"
 
-module Metamorph
+module Metamorpher
   class Node
     extend Attributable
     attributes :type, children: []

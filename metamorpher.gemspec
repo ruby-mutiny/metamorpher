@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'metamorph/version'
+require 'metamorpher/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "metamorph"
-  spec.version       = Metamorph::VERSION
+  spec.name          = "metamorpher"
+  spec.version       = Metamorpher::VERSION
   spec.authors       = ["Louis Rose"]
   spec.email         = ["louis.rose@york.ac.uk"]
   spec.description   = %q{Provides structures that support program transformations, such as refactoring or program mutation.}
   spec.summary       = %q{Term rewriting for Ruby programs}
-  spec.homepage      = "https://github.com/mutiny/metamorph"
+  spec.homepage      = "https://github.com/mutiny/metamorpher"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
