@@ -3,7 +3,7 @@ require "metamorpher/match"
 require "metamorpher/no_match"
 
 module Metamorpher
-  class Node
+  class Literal
     extend Attributable
     attributes :name, children: []
 
@@ -31,14 +31,14 @@ module Metamorpher
     end
 
     def substitute(substitution)
-      Node.new(
+      Literal.new(
         name: name,
         children: children.map { |child| child.substitute(substitution) }
       )
     end
 
     def replace(child, replacement)
-      Node.new(
+      Literal.new(
         name: name,
         children: children.map { |original| original == child ? replacement : original }
       )

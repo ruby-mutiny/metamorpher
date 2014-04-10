@@ -1,5 +1,5 @@
 require "metamorpher/rule"
-require "metamorpher/node"
+require "metamorpher/literal"
 require "metamorpher/variable"
 require "metamorpher/greedy_variable"
 require "metamorpher/derived"
@@ -7,14 +7,14 @@ require "metamorpher/derived"
 require "parser/current"
 
 module Metamorpher
-  describe Node do
+  describe Literal do
     describe "simple" do
-      it "nodes should match asts" do
-        a = Node.new(name: :send, children: [Node.new(name: nil), Node.new(name: :a)])
-        b = Node.new(name: :send, children: [Node.new(name: nil), Node.new(name: :b)])
-        op = Node.new(name: :^)
+      it "Literals should match asts" do
+        a = Literal.new(name: :send, children: [Literal.new(name: nil), Literal.new(name: :a)])
+        b = Literal.new(name: :send, children: [Literal.new(name: nil), Literal.new(name: :b)])
+        op = Literal.new(name: :^)
 
-        pattern = Node.new(name: :send, children: [a, op, b])
+        pattern = Literal.new(name: :send, children: [a, op, b])
 
         ast = parse("a ^ b")
         result = pattern.match(ast)
@@ -22,12 +22,12 @@ module Metamorpher
         expect(result.matches?).to be_true
       end
 
-      it "nodes should return a negative result when there is no match" do
-        a = Node.new(name: :send, children: [Node.new(name: nil), Node.new(name: :a)])
-        b = Node.new(name: :send, children: [Node.new(name: nil), Node.new(name: :b)])
-        op = Node.new(name: :^)
+      it "Literals should return a negative result when there is no match" do
+        a = Literal.new(name: :send, children: [Literal.new(name: nil), Literal.new(name: :a)])
+        b = Literal.new(name: :send, children: [Literal.new(name: nil), Literal.new(name: :b)])
+        op = Literal.new(name: :^)
 
-        pattern = Node.new(name: :send, children: [a, op, b])
+        pattern = Literal.new(name: :send, children: [a, op, b])
 
         ast = parse("a + b")
         result = pattern.match(ast)
@@ -35,12 +35,12 @@ module Metamorpher
         expect(result.matches?).to be_false
       end
 
-      it "variables should capture the nodes that they match" do
+      it "variables should capture the Literals that they match" do
         x = Variable.new(name: :x)
         y = Variable.new(name: :y)
-        op = Node.new(name: :^)
+        op = Literal.new(name: :^)
 
-        pattern = Node.new(name: :send, children: [x, op, y])
+        pattern = Literal.new(name: :send, children: [x, op, y])
 
         ast = parse("a ^ b")
         result = pattern.match(ast)
@@ -52,10 +52,10 @@ module Metamorpher
 
       it "should capture all remaining children" do
         name = Variable.new(name: :name)
-        method = Node.new(name: :find_by_name_and_birthday)
+        method = Literal.new(name: :find_by_name_and_birthday)
         params = GreedyVariable.new(name: :params)
 
-        pattern = Node.new(name: :send, children: [name, method, params])
+        pattern = Literal.new(name: :send, children: [name, method, params])
 
         ast = parse("Person.find_by_name_and_birthday(name, birthday)")
         result = pattern.match(ast)
@@ -69,8 +69,8 @@ module Metamorpher
       it "should rewrite top-level term" do
         x = Variable.new(name: :x)
         y = Variable.new(name: :y)
-        pattern = Node.new(name: :send, children: [x, Node.new(name: :^), y])
-        replacement = Node.new(name: :send, children: [x, Node.new(name: :+), y])
+        pattern = Literal.new(name: :send, children: [x, Literal.new(name: :^), y])
+        replacement = Literal.new(name: :send, children: [x, Literal.new(name: :+), y])
         rule = Rule.new(pattern: pattern, replacement: replacement)
 
         ast = parse("a ^ b")
@@ -82,8 +82,8 @@ module Metamorpher
       it "should rewrite a nested term" do
         x = Variable.new(name: :x)
         y = Variable.new(name: :y)
-        pattern = Node.new(name: :send, children: [x, Node.new(name: :^), y])
-        replacement = Node.new(name: :send, children: [x, Node.new(name: :+), y])
+        pattern = Literal.new(name: :send, children: [x, Literal.new(name: :^), y])
+        replacement = Literal.new(name: :send, children: [x, Literal.new(name: :+), y])
         rule = Rule.new(pattern: pattern, replacement: replacement)
 
         ast = parse("def foo; a ^ b; end")
@@ -98,28 +98,28 @@ module Metamorpher
         # name.where(PARAMS).first -> name.find_by(PARAMS)
         # send(send(name, where, PARAMS), first) -> send(name, find_by, PARAMS)
 
-        pattern = Node.new(
+        pattern = Literal.new(
           name: :send,
           children: [
-            Node.new(
+            Literal.new(
               name: :send,
               children: [
                 Variable.new(name: :name),
-                Node.new(name: :where),
+                Literal.new(name: :where),
                 Variable.new(name: :params)
               ]
             ),
-            Node.new(
+            Literal.new(
               name: :first
             )
           ]
         )
 
-        replacement = Node.new(
+        replacement = Literal.new(
           name: :send,
           children: [
             Variable.new(name: :name),
-            Node.new(name: :find_by),
+            Literal.new(name: :find_by),
             Variable.new(name: :params)
           ]
         )
@@ -135,7 +135,7 @@ module Metamorpher
 
         # name.METHOD -> name.PLURAL where PLURAL derives METHOD.name + "s"
 
-        pattern = Node.new(
+        pattern = Literal.new(
           name: :send,
           children: [
             Variable.new(name: :name),
@@ -143,14 +143,14 @@ module Metamorpher
           ]
         )
 
-        replacement = Node.new(
+        replacement = Literal.new(
           name: :send,
           children: [
             Variable.new(name: :name),
             Derived.new(## is this not another rule?!
               base: [:method],
               derivation: lambda do |method|
-                Node.new(name: (method.name.to_s + "s").to_sym)
+                Literal.new(name: (method.name.to_s + "s").to_sym)
               end
             )
           ]
@@ -166,7 +166,7 @@ module Metamorpher
         ast = parse("Asset.find_by_asset_id_and_object_path(id, path)")
 
         # send(name, DYNAMIC_FINDER, PARAMS...)
-        #  where DYNAMIC_FINDER satisfies node.name.to_s.start_with?("find_by")
+        #  where DYNAMIC_FINDER satisfies Literal.name.to_s.start_with?("find_by")
         # ->
         # send(name, find_by, HASH)
         #  where HASH
@@ -177,43 +177,43 @@ module Metamorpher
         #      pair(sym(KEYS[N]), PARAM[N])
         #    ) where KEYS = DYNAMIC_FINDER.name["find_by_".length..-1].split("_and_")
 
-        pattern = Node.new(
+        pattern = Literal.new(
           name: :send,
           children: [
             Variable.new(name: :name),
             Variable.new(
               name: :dynamic_finder,
-              condition: ->(node) { node.name.to_s.start_with?("find_by") }
+              condition: ->(dynamic_finder) { dynamic_finder.name.to_s.start_with?("find_by") }
             ),
             GreedyVariable.new(name: :params)
           ]
         )
 
-        replacement = Node.new(
+        replacement = Literal.new(
           name: :send,
           children: [
             Variable.new(name: :name),
-            Node.new(name: :find_by),
+            Literal.new(name: :find_by),
             Derived.new(## is this not a substitution
               base: [:dynamic_finder, :params],
               derivation: lambda do |dynamic_finder, params|
                 keys = dynamic_finder.name.to_s["find_by_".length..-1].split("_and_")
 
                 pairs = keys.zip(params).map do |key, param|
-                  Node.new(
+                  Literal.new(
                     name: :pair,
                     children: [
-                      Node.new(
+                      Literal.new(
                         name: :sym,
                         children: [
-                          Node.new(name: key.to_sym)
+                          Literal.new(name: key.to_sym)
                         ]
                       ),
                       param
                     ]
                   )
                 end
-                Node.new(name: :hash, children: pairs)
+                Literal.new(name: :hash, children: pairs)
 
               end
             )
@@ -233,9 +233,9 @@ module Metamorpher
 
     def import(ast)
       if ast.respond_to? :type
-        Node.new(name: ast.type, children: ast.children.map { |c| import(c) })
+        Literal.new(name: ast.type, children: ast.children.map { |c| import(c) })
       else
-        Node.new(name: ast)
+        Literal.new(name: ast)
       end
     end
   end

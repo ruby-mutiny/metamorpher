@@ -56,9 +56,9 @@ Below is a very simple (and currently verbose) example that refactors Ruby on Ra
 
       def import(ast)
         if ast.respond_to? :type
-          Node.new(name: ast.type, children: ast.children.map { |c| import(c) })
+          Literal.new(name: ast.type, children: ast.children.map { |c| import(c) })
         else
-          Node.new(name: ast)
+          Literal.new(name: ast)
         end
       end
       
@@ -71,28 +71,28 @@ Below is a very simple (and currently verbose) example that refactors Ruby on Ra
         #
         # A better interface will be added in a future version of metamorpher!
     
-        pattern = Node.new(
+        pattern = Literal.new(
           type: :send, 
           children: [
-            Node.new(
+            Literal.new(
               type: :send,
               children: [
                 Variable.new(name: :type),
-                Node.new(type: :where),
+                Literal.new(type: :where),
                 Variable.new(name: :params)
               ]
             ),
-            Node.new(
+            Literal.new(
               type: :first
             )
           ]
         )
     
-        replacement = Node.new(
+        replacement = Literal.new(
           type: :send, 
           children: [
             Variable.new(name: :type),
-            Node.new(type: :find_by),
+            Literal.new(type: :find_by),
             Variable.new(name: :params)
           ]
         )
