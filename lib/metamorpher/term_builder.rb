@@ -4,7 +4,7 @@ require "metamorpher/variable"
 module Metamorpher
   class TermBuilder
     def literal!(name, *children)
-      Literal.new(name: name, children: children.map { |c| nodify(c) })
+      Literal.new(name: name, children: children.map { |c| termify(c) })
     end
 
     def variable!(name, &block)
@@ -37,8 +37,8 @@ module Metamorpher
 
     private
 
-    def nodify(item)
-      item.kind_of?(Node) ? item : literal!(item)
+    def termify(item)
+      item.kind_of?(Term) ? item : literal!(item)
     end
   end
 end

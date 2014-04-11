@@ -1,7 +1,7 @@
-require "metamorpher/node"
+require "metamorpher/term"
 
 module Metamorpher
-  class Derived < Node
+  class Derived < Term
     attributes :base, :derivation
 
     def substitute(substitution)

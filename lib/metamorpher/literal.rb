@@ -1,9 +1,9 @@
-require "metamorpher/node"
+require "metamorpher/term"
 require "metamorpher/match"
 require "metamorpher/no_match"
 
 module Metamorpher
-  class Literal < Node
+  class Literal < Term
     attributes children: []
 
     def initialize(attributes = {})

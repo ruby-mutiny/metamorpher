@@ -50,7 +50,7 @@ module Metamorpher
         expect(actual).to eq(expected)
       end
 
-      it "should not automatically convert children that are already nodes" do
+      it "should not automatically convert children that are already terms" do
         actual = subject.literal!(:inc, subject.variable!(:a))
         expected = Literal.new(name: :inc, children: [Variable.new(name: :a)])
 
@@ -89,7 +89,7 @@ module Metamorpher
       end
 
       it "should create condition from block" do
-        built = subject.variable!(:a) { |node| node > 0 }
+        built = subject.variable!(:a) { |term| term > 0 }
 
         expect(built.name).to eq(:a)
         expect(built.condition.call(1)).to be_true
@@ -110,7 +110,7 @@ module Metamorpher
       end
 
       it "should create condition from block" do
-        built = subject._a { |node| node > 0 }
+        built = subject._a { |term| term > 0 }
 
         expect(built.name).to eq(:a)
         expect(built.condition.call(1)).to be_true
@@ -131,7 +131,7 @@ module Metamorpher
       end
 
       it "should create condition from block" do
-        built = subject.greedy_variable!(:a) { |node| node > 0 }
+        built = subject.greedy_variable!(:a) { |term| term > 0 }
 
         expect(built.name).to eq(:a)
         expect(built.condition.call(1)).to be_true
@@ -152,7 +152,7 @@ module Metamorpher
       end
 
       it "should create condition from block" do
-        built = subject._a(:greedy) { |node| node > 0 }
+        built = subject._a(:greedy) { |term| term > 0 }
 
         expect(built.name).to eq(:a)
         expect(built.condition.call(1)).to be_true

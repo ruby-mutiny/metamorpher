@@ -1,7 +1,7 @@
 require "attributable"
 
 module Metamorpher
-  class Node
+  class Term
     extend Attributable
     attributes :name
 

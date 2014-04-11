@@ -1,8 +1,8 @@
-require "metamorpher/node"
+require "metamorpher/term"
 require "metamorpher/match"
 
 module Metamorpher
-  class Variable < Node
+  class Variable < Term
     attributes greedy?: false, condition: ->(_) { true }
 
     def inspect
