@@ -4,7 +4,6 @@ require "metamorpher/no_match"
 
 module Metamorpher
   class Literal < Node
-    specialises Node
     attributes children: []
 
     def initialize(attributes = {})

@@ -3,7 +3,6 @@ require "metamorpher/match"
 
 module Metamorpher
   class Variable < Node
-    specialises Node
     attributes condition: ->(_) { true }
 
     def inspect
