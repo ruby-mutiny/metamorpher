@@ -23,7 +23,7 @@ module Metamorpher
         current = waiting.pop
         unless discovered.include?(current)
           discovered << current
-          waiting.concat(current.children)
+          waiting.concat(current.children) if current.respond_to?(:children)
         end
         result = pattern.match(current)
         return result if result.matches?
