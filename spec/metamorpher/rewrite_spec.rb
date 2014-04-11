@@ -1,7 +1,6 @@
 require "metamorpher/rule"
 require "metamorpher/literal"
 require "metamorpher/variable"
-require "metamorpher/greedy_variable"
 require "metamorpher/derived"
 
 require "parser/current"
@@ -53,7 +52,7 @@ module Metamorpher
       it "should capture all remaining children" do
         name = Variable.new(name: :name)
         method = Literal.new(name: :find_by_name_and_birthday)
-        params = GreedyVariable.new(name: :params)
+        params = Variable.new(name: :params, greedy?: true)
 
         pattern = Literal.new(name: :send, children: [name, method, params])
 
@@ -185,7 +184,7 @@ module Metamorpher
               name: :dynamic_finder,
               condition: ->(dynamic_finder) { dynamic_finder.name.to_s.start_with?("find_by") }
             ),
-            GreedyVariable.new(name: :params)
+            Variable.new(name: :params, greedy?: true)
           ]
         )
 

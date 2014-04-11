@@ -3,7 +3,7 @@ require "metamorpher/match"
 
 module Metamorpher
   class Variable < Node
-    attributes condition: ->(_) { true }
+    attributes greedy?: false, condition: ->(_) { true }
 
     def inspect
       name.to_s.upcase
@@ -23,7 +23,7 @@ module Metamorpher
     end
 
     def capture(other)
-      other
+      greedy? ? other.and_younger_siblings : other
     end
   end
 end
