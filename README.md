@@ -22,122 +22,130 @@ TwoPlusTwoRewriter.new.rewrite(expression) # => 4
     
 The implementation of TwoPlusTwoRewriter is as follows:
 
-    require "metamorpher/rule"
-    
-    class TwoPlusTwoRewriter
-      def rewrite(expression)
-        rule.apply(expression)
-      end
-      
-      private
-      
-      def rule
-        Metamorpher::Rule.new(pattern: pattern, replacement: replacement)
-      end
-      
-      def pattern
-        Metamorpher::Literal.new(
-          name: :+,
-          children: [
-            Metamorpher::Literal.new(name: 2),
-            Metamorpher::Literal.new(name: 2)
-          ]
-        )
-      end
-      
-      def replacement
-        Metamorpher::Literal.new(name: 4)
-      end
-    end
+```ruby
+require "metamorpher/rule"
+
+class TwoPlusTwoRewriter
+  def rewrite(expression)
+    rule.apply(expression)
+  end
+  
+  private
+  
+  def rule
+    Metamorpher::Rule.new(pattern: pattern, replacement: replacement)
+  end
+  
+  def pattern
+    Metamorpher::Literal.new(
+      name: :+,
+      children: [
+        Metamorpher::Literal.new(name: 2),
+        Metamorpher::Literal.new(name: 2)
+      ]
+    )
+  end
+  
+  def replacement
+    Metamorpher::Literal.new(name: 4)
+  end
+end
+```
 
 Note that a rule has no effect if it is applied to an expression that does not match its pattern:
 
-    expression = Metamorpher::Literal.new(
-      name: :+,
-      children: [
-        Metamorpher::Literal.new(name: 3),
-        Metamorpher::Literal.new(name: 2)
-      ]
-    ) # => +(3,2)
-    
-    TwoPlusTwoRewriter.new.rewrite(expression) # => +(3,2)
+```ruby
+expression = Metamorpher::Literal.new(
+  name: :+,
+  children: [
+    Metamorpher::Literal.new(name: 3),
+    Metamorpher::Literal.new(name: 2)
+  ]
+) # => +(3,2)
+
+TwoPlusTwoRewriter.new.rewrite(expression) # => +(3,2)
+```
 
 ## Variables
 
 Rewriting becomes a lot more useful when we are able to capture some parts of the expression during matching, and then re-use the captured parts in the replacement. Metamorpher provides variables for this purpose. For example:
 
-    expression = Metamorpher::Literal.new(
+```ruby
+expression = Metamorpher::Literal.new(
+  name: :inc,
+  children: [Metamorpher::Literal.new(name: 2)]
+) # => inc(2)
+
+IncrementRewriter.new.rewrite(expression) # => +(2,1)
+
+
+expression = Metamorpher::Literal.new(
+  name: :inc,
+  children: [Metamorpher::Literal.new(name: 3)]
+) # => inc(3)
+
+IncrementRewriter.new.rewrite(expression) # => +(3,1)
+
+
+expression = Metamorpher::Literal.new(
+  name: :inc,
+  children: [Metamorpher::Literal.new(name: :n)]
+) # => inc(n)
+
+IncrementRewriter.new.rewrite(expression) # => +(:n,1)
+
+
+expression = Metamorpher::Literal.new(
+  name: :inc,
+  children: [
+    Metamorpher::Literal.new(
       name: :inc,
       children: [Metamorpher::Literal.new(name: 2)]
-    ) # => inc(2)
-    
-    IncrementRewriter.new.rewrite(expression) # => +(2,1)
+    )
+  ]
+) # => inc(inc(2))
 
-
-    expression = Metamorpher::Literal.new(
-      name: :inc,
-      children: [Metamorpher::Literal.new(name: 3)]
-    ) # => inc(3)
-    
-    IncrementRewriter.new.rewrite(expression) # => +(3,1)
-
-
-    expression = Metamorpher::Literal.new(
-      name: :inc,
-      children: [Metamorpher::Literal.new(name: :n)]
-    ) # => inc(n)
-    
-    IncrementRewriter.new.rewrite(expression) # => +(:n,1)
-    
-    
-    expression = Metamorpher::Literal.new(
-      name: :inc,
-      children: [
-        Metamorpher::Literal.new(
-          name: :inc,
-          children: [Metamorpher::Literal.new(name: 2)]
-        )
-      ]
-    ) # => inc(inc(2))
-    
-    IncrementRewriter.new.rewrite(expression) # => +(inc(2),1)
+IncrementRewriter.new.rewrite(expression) # => +(inc(2),1)
+```
 
 The implementation of `IncrementRewriter` makes uses of a variable to capture the argument passed to `inc`:
 
-    require "metamorpher/literal"
-    require "metamorpher/variable"
-    require "metamorpher/rule"
-    
-    class IncrementRewriter
-      def rewrite(expression)
-        rule.apply(expression)
-      end
-      
-      private
-      
-      def rule
-        Metamorpher::Rule.new(pattern: pattern, replacement: replacement)
-      end
-      
-      def pattern
-        Metamorpher::Literal.new(
-          name: :inc,
-          children: [
-            Metamorpher::Variable.new(name: :incrementee),
-          ]
-        )
-      end
-      
-      def replacement
-        Metamorpher::Literal.new(
-          name: :+,
-          children: [
-            Metamorpher::Variable.new(name: :incrementee),
-            Metamorpher::Literal.new(name: 1),
-          ]
-        )
-      end
-    end
+```ruby
+require "metamorpher/literal"
+require "metamorpher/variable"
+require "metamorpher/rule"
+
+class IncrementRewriter
+  def rewrite(expression)
+    rule.apply(expression)
+  end
+  
+  private
+  
+  def rule
+    Metamorpher::Rule.new(pattern: pattern, replacement: replacement)
+  end
+  
+  def pattern
+    Metamorpher::Literal.new(
+      name: :inc,
+      children: [
+        Metamorpher::Variable.new(name: :incrementee),
+      ]
+    )
+  end
+  
+  def replacement
+    Metamorpher::Literal.new(
+      name: :+,
+      children: [
+        Metamorpher::Variable.new(name: :incrementee),
+        Metamorpher::Literal.new(name: 1),
+      ]
+    )
+  end
+end
+```
     
 ### Conditional variables
 
