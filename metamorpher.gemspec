@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Louis Rose"]
   spec.email         = ["louis.rose@york.ac.uk"]
   spec.description   = %q{Provides structures that support program transformations, such as refactoring or program mutation.}
-  spec.summary       = %q{Term rewriting for Ruby programs}
+  spec.summary       = %q{A term rewriting library for transforming (Ruby) programs}
   spec.homepage      = "https://github.com/mutiny/metamorpher"
   spec.license       = "MIT"
 
