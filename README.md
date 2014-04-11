@@ -66,7 +66,7 @@ expression = Metamorpher::Literal.new(
 TwoPlusTwoRewriter.new.rewrite(expression) # => +(3,2)
 ```
 
-## Variables
+### Variables
 
 Rewriting becomes a lot more useful when we are able to capture some parts of the expression during matching, and then re-use the captured parts in the replacement. Metamorpher provides variables for this purpose. For example:
 
@@ -147,13 +147,13 @@ class IncrementRewriter
 end
 ```
     
-### Conditional variables
+#### Conditional variables
 
-### Greedy variables
+#### Greedy variables
 
-## Derivations
+### Derivations
     
-## Rewriting Ruby programs
+### Rewriting Ruby programs
 To use metamorpher to rewrite Ruby programs, I recommend the wonderful [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems.
 
 __TODO__ example of rewriting a Ruby program
