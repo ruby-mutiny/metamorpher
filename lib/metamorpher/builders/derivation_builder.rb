@@ -1,4 +1,4 @@
-require "metamorpher/derived"
+require "metamorpher/rewriting/derived"
 require "metamorpher/builder"
 
 module Metamorpher
@@ -8,7 +8,7 @@ module Metamorpher
         fail ArgumentError, "wrong number of arguments (0)" if base.empty?
         fail ArgumentError, "a block must be provided" if block.nil?
 
-        Derived.new(
+        Rewriting::Derived.new(
           base: base,
           derivation: ->(*args) { block.call(*args, Metamorpher::Builder.new) }
         )

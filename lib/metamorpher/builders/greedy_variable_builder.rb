@@ -1,13 +1,13 @@
-require "metamorpher/variable"
+require "metamorpher/rewriting/variable"
 
 module Metamorpher
   module Builders
     class GreedyVariableBuilder
       def greedy_variable!(name, &block)
         if block
-          Variable.new(name: name, condition: block, greedy?: true)
+          Rewriting::Variable.new(name: name, condition: block, greedy?: true)
         else
-          Variable.new(name: name, greedy?: true)
+          Rewriting::Variable.new(name: name, greedy?: true)
         end
       end
 
