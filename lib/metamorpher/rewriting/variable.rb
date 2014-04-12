@@ -17,7 +17,7 @@ module Metamorpher
       def match(other)
         captured = capture(other)
         if condition.call(captured)
-          Matching::Match.new(substitution: { name => captured })
+          Matching::Match.new(root: captured, substitution: { name => captured })
         else
           Matching::NoMatch.new
         end
