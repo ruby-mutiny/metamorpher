@@ -14,9 +14,7 @@ module Metamorpher
         end
 
         it "should capture all arguments as the base" do
-          built = subject.derivation!(:key, :value) do |method|
-            Literal.new(name: :hardcoded)
-          end
+          built = subject.derivation!(:key, :value) {}
 
           expect(built.base).to eq([:key, :value])
         end
