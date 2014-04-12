@@ -10,14 +10,13 @@ Here's a very simple example that rewrites expressions of the form `succ(0)` to 
 require "metamorpher"
 
 expression = Metamorpher.builder.succ(0) # => succ(0)
-  
-TwoPlusTwoRewriter.new.run(expression) # => 1
+SuccZeroRewriter.new.run(expression) # => 1
 ```
     
-The implementation of TwoPlusTwoRewriter is as follows:
+The implementation of `SuccZeroRewriter` is as follows:
 
 ```ruby
-class TwoPlusTwoRewriter
+class SuccZeroRewriter
   include Metamorpher::Rewriter
   
   def pattern
@@ -30,12 +29,11 @@ class TwoPlusTwoRewriter
 end
 ```
 
-Note that a rule has no effect if it is applied to an expression that does not match its pattern:
+Note that `run` has no effect when called on an expression that does not match `pattern`:
 
 ```ruby
 expression = Metamorpher.builder.succ(1) # => succ(1)
-
-TwoPlusTwoRewriter.new.run(expression) # => succ(1)
+SuccZeroRewriter.new.run(expression) # => succ(1)
 ```
 
 ### Variables
@@ -44,29 +42,22 @@ Rewriting becomes a lot more useful when we are able to capture some parts of th
 
 ```ruby
 expression = Metamorpher.builder.inc(2) # => inc(2)
-
-IncrementRewriter.new.rewrite(expression) # => +(2,1)
-
+IncRewriter.new.run(expression) # => add(2,1)
 
 expression = Metamorpher.builder.inc(3) # => inc(3)
-
-IncrementRewriter.new.rewrite(expression) # => +(3,1)
-
+IncRewriter.new.run(expression) # => add(3,1)
 
 expression = Metamorpher.builder.inc(:n) # => inc(n)
-
-IncrementRewriter.new.rewrite(expression) # => +(n,1)
-
+IncRewriter.new.run(expression) # => add(n,1)
 
 expression = Metamorpher.builder.inc(Metamorpher.builder.inc(:n)) # => inc(inc(n))
-
-IncrementRewriter.new.rewrite(expression) # => +(inc(n),1)
+IncRewriter.new.run(expression) # => add(inc(n),1)
 ```
 
-The implementation of `IncrementRewriter` makes uses of a variable to capture the argument passed to `inc`:
+The implementation of `IncRewriter` is below. Note the use of a variable (`incrementee`) to capture the child of `inc`:
 
 ```ruby
-class IncrementRewriter
+class IncRewriter
   include Metamorpher::Rewriter
   
   def pattern
@@ -74,7 +65,7 @@ class IncrementRewriter
   end
   
   def replacement
-    builder.+(builder._incrementee, 1)
+    builder.add(builder._incrementee, 1)
   end
 end
 ```
