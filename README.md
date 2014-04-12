@@ -13,11 +13,11 @@ class SuccZeroRewriter
   include Metamorpher::Rewriter
   
   def pattern
-    builder.succ(0)
+    builder.literal! :succ, 0
   end
   
   def replacement
-    builder.literal!(1)
+    builder.literal! 1
   end
 end
 
@@ -27,7 +27,7 @@ SuccZeroRewriter.new.run(expression) # => 1
 
 This example is simple, but demonstrates many of the key concepts in metamorpher. You might now want to read about:
 
-* [Rewriters](#rewriters) - how transform expressions into other expressions.
+* [Rewriters](#rewriters) - how to transform expressions into other expressions.
 * [Matchers](#matchers) - how to determine whether an expression adheres to a pattern (i.e., matches a term).
 * [Building terms](#building-terms) - how to create the data structure (terms) used by Rewriters and Matchers.
 * [Practical examples](#practical-examples) - examples of using metamorpher to refactor Ruby programs
@@ -36,7 +36,7 @@ This example is simple, but demonstrates many of the key concepts in metamorpher
 
 Rewriters perform small, in-place changes to an expression. They can be used for program transformations, such as refactorings. For some simple program transformations, a regular expression can be used on the program source. For more complicated transformations, a term rewriting system (such as the one provided by `Metamorpher::Rewriter`) is likely to be a better fit.
 
-Metamorpher provides the `Metamorpher::Rewriter` module for specifying rewriters. Include it, specify a `pattern` and a `replacement`, and then call `run` on an expression:
+Metamorpher provides the `Metamorpher::Rewriter` module for specifying rewriters. Include it, specify a `pattern` and a `replacement`, and then call `run(expression)`:
 
 ```ruby
 require "metamorpher"
@@ -45,11 +45,11 @@ class SuccZeroRewriter
   include Metamorpher::Rewriter
   
   def pattern
-    builder.succ(0)
+    builder.literal! :succ, 0
   end
   
   def replacement
-    builder.literal!(1)
+    builder.literal! 1
   end
 end
 
@@ -66,7 +66,7 @@ SuccZeroRewriter.new.run(expression) # => succ(1)
 
 #### Derivations
 
-Rewriting is even more powerful when we are able to adjust the expression that is substituted for a captured variable. Metamorpher provides derivations for this purpose. (You may wish to read the section on [variables](#variables) before looking at the following example).
+Rewriting is more powerful when we are able to adjust the expression that is substituted for a captured variable. Metamorpher provides derivations for this purpose. (You may wish to read the section on [variables](#variables) before looking at the following example).
 
 For example, suppose that we wish to create a rewriter that pluralises any literal. The following rewriter achieves this, by using a derivation (see the implementation of `replacement`) to create a new literal after an expression has been matched. Crucially, the derivation uses data from the captured literal when building the replacement literal:
 
@@ -98,9 +98,9 @@ end
 
 ### Matchers
 
-Matchers search for subexpressions that adhere to a specified pattern. They are used be rewriters to find transformation sites in expressions, and can also be used to search programs. For simple searches over a program's source code, a regular expression can be used. For more complicated searches, a term matching system (such as the one provided by `Metamorpher::Matcher`) is likely to be a better fit.
+Matchers search for subexpressions that adhere to a specified pattern. They are used by rewriters to find transformation sites in expressions, and can also be used to search programs. For simple searches over a program's source code, a regular expression can be used. For more complicated searches, a term matching system (such as the one provided by `Metamorpher::Matcher`) is likely to be a better fit.
 
-Metamorpher provides the `Metamorpher::Matcher` module for specifying matchers. Include it, specify a `pattern` and then call `run` on an expression:
+Metamorpher provides the `Metamorpher::Matcher` module for specifying matchers. Include it, specify a `pattern` and then call `run(expression)`:
 
 ```ruby
 require "metamorpher"
@@ -129,8 +129,6 @@ result.matches? # => false
 Matching is more powerful when we can allow for some variability in the expressions that we wish to match. Metamorpher provides variables for this purpose.
 
 For example, suppose we wish to match expressions of the form `succ(X)` where X could be any subexpression. The following matcher achieves this, by using a variable (`x`) to match the argument to `succ`:
-
-Rewriting becomes a lot more useful when we are able to capture some parts of the expression during matching, and then re-use the captured parts in the replacement. Metamorpher provides variables for this purpose. For example:
 
 ```ruby
 class SuccMatcher
@@ -188,7 +186,7 @@ DynamicFinderMatcher.new.run(expression)
 
 #### Greedy variables
 
-Sometimes a matchers needs to be able to match an expression that contains a variable number of subexpressions. Metamorpher provides greedy variables for this purpose.
+Sometimes a matcher needs to be able to match an expression that contains a variable number of subexpressions. Metamorpher provides greedy variables for this purpose.
 
 For example, suppose that we wish to create a matcher that works for an expression, `add`, that can have 1 or more children. The following matcher achieves this, by using a greedy variable (`args`).
 
@@ -215,9 +213,9 @@ MultiAddMatcher.new.run(Metamorpher.builder.add(1,2,3))
 The primary data structure used for [rewriting](#rewriters) and for [matching](#matchers) is a term. A term is a tree (i.e., an acyclic graph). The nodes of the tree are either:
 
 * Literal - a node of the abstract-syntax tree of a program.
-* Variable - a named node, which is bound to a subterm (subtree) during matching
-* Greedy variable - a variable that is bound to a set of subterms during matching
-* Derivation - a placeholder node, which is replaced during rewriting
+* Variable - a named node, which is bound to a subterm (subtree) during matching.
+* Greedy variable - a variable that is bound to a set of subterms during matching.
+* Derivation - a placeholder node, which is replaced during rewriting.
 
 To simplify the construction of terms, metamorpher provides the `Metamorpher::Builder` class:
 
