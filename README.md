@@ -9,13 +9,6 @@ Here's a very simple example that rewrites expressions of the form `succ(0)` to 
 ```ruby
 require "metamorpher"
 
-expression = Metamorpher.builder.succ(0) # => succ(0)
-SuccZeroRewriter.new.run(expression) # => 1
-```
-    
-The implementation of `SuccZeroRewriter` is as follows:
-
-```ruby
 class SuccZeroRewriter
   include Metamorpher::Rewriter
   
@@ -27,6 +20,9 @@ class SuccZeroRewriter
     builder.literal!(1)
   end
 end
+
+expression = Metamorpher.builder.succ(0) # => succ(0)
+SuccZeroRewriter.new.run(expression) # => 1
 ```
 
 This example is simple, but demonstrates many of the key concepts in metamorpher. You might now want to read about:
@@ -38,6 +34,29 @@ This example is simple, but demonstrates many of the key concepts in metamorpher
 
 ### Rewriters
 
+Rewriters perform small, in-place changes to an expression. They can be used for program transformations, such as refactorings. For some simple program transformations, a regular expression can be used on the program source. For more complicated transformations, a term rewriting system (such as the one provided by `Metamorpher::Rewriter`) is likely to be a better fit.
+
+Metamorpher provides the `Metamorpher::Rewriter` module for specifying rewriters. Include it, specify a `pattern` and a `replacement`, and then call `run` on an expression:
+
+```ruby
+require "metamorpher"
+
+class SuccZeroRewriter
+  include Metamorpher::Rewriter
+  
+  def pattern
+    builder.succ(0)
+  end
+  
+  def replacement
+    builder.literal!(1)
+  end
+end
+
+expression = Metamorpher.builder.succ(0) # => succ(0)
+SuccZeroRewriter.new.run(expression) # => 1
+```
+
 Note that `run` has no effect when called on an expression that does not match `pattern`:
 
 ```ruby
@@ -45,11 +64,11 @@ expression = Metamorpher.builder.succ(1) # => succ(1)
 SuccZeroRewriter.new.run(expression) # => succ(1)
 ```
 
-#### Variables
-
 #### Derivations
 
-Sometimes a rewriter needs to adjust matched parts of an expression when building the replacement expression. Metamorpher provides derivations for this purpose. For example:
+Rewriting is even more powerful when we are able to adjust the expression that is substituted for a captured variable. Metamorpher provides derivations for this purpose. (You may wish to read the section on [variables](#variables) before looking at the following example).
+
+For example, suppose that we wish to create a rewriter that pluralises any literal. The following rewriter achieves this, by using a derivation (see the implementation of `replacement`) to create a new literal after an expression has been matched. Crucially, the derivation uses data from the captured literal when building the replacement literal:
 
 ```ruby
 class PluraliseRewriter
@@ -69,45 +88,81 @@ end
 PluraliseRewriter.new.run(Metamorpher.builder.literal! "dog") # => "dogs"
 ```
 
-### Matching
+Derivations can be based on more than one captured variable. In which case the call to `derivation!` and the block take more than one argument:
+
+```ruby
+builder.derivation! :key, :value do |key, value|
+  builder.literal!(:pair, key, value)
+end
+```
+
+### Matchers
+
+Matchers search for subexpressions that adhere to a specified pattern. They are used be rewriters to find transformation sites in expressions, and can also be used to search programs. For simple searches over a program's source code, a regular expression can be used. For more complicated searches, a term matching system (such as the one provided by `Metamorpher::Matcher`) is likely to be a better fit.
+
+Metamorpher provides the `Metamorpher::Matcher` module for specifying matchers. Include it, specify a `pattern` and then call `run` on an expression:
+
+```ruby
+require "metamorpher"
+
+class SuccZeroMatcher
+  include Metamorpher::Matcher
+  
+  def pattern
+    builder.succ(0)
+  end
+end
+
+expression = Metamorpher.builder.succ(0) # => succ(0)
+result = SuccZeroMatcher.new.run(expression)
+ # => <Metamorpher::Matching::Match root=succ(0), substitution={}> 
+result.matches? # => true
+
+expression = Metamorpher.builder.succ(1) # => succ(1)
+result = SuccZeroMatcher.new.run(expression)
+ # => <Metamorpher::Matching::NoMatch>
+result.matches? # => false
+```
 
 #### Variables
+
+Matching is more powerful when we can allow for some variability in the expressions that we wish to match. Metamorpher provides variables for this purpose.
+
+For example, suppose we wish to match expressions of the form `succ(X)` where X could be any subexpression. The following matcher achieves this, by using a variable (`x`) to match the argument to `succ`:
 
 Rewriting becomes a lot more useful when we are able to capture some parts of the expression during matching, and then re-use the captured parts in the replacement. Metamorpher provides variables for this purpose. For example:
 
 ```ruby
-expression = Metamorpher.builder.inc(2) # => inc(2)
-IncRewriter.new.run(expression) # => add(2,1)
-
-expression = Metamorpher.builder.inc(3) # => inc(3)
-IncRewriter.new.run(expression) # => add(3,1)
-
-expression = Metamorpher.builder.inc(:n) # => inc(n)
-IncRewriter.new.run(expression) # => add(n,1)
-
-expression = Metamorpher.builder.inc(Metamorpher.builder.inc(:n)) # => inc(inc(n))
-IncRewriter.new.run(expression) # => add(inc(n),1)
-```
-
-The implementation of `IncRewriter` is below. Note the use of a variable (`incrementee`) to capture the child of `inc`:
-
-```ruby
-class IncRewriter
-  include Metamorpher::Rewriter
+class SuccMatcher
+  include Metamorpher::Matcher
   
   def pattern
-    builder.inc(builder._incrementee)
-  end
-  
-  def replacement
-    builder.add(builder._incrementee, 1)
+    builder.succ(builder._x)
   end
 end
+
+expression = Metamorpher.builder.succ(0) # => succ(0)
+SuccMatcher.new.run(expression)
+ # => <Metamorpher::Matching::Match root=succ(0), substitution={:x=>0}> 
+
+expression = Metamorpher.builder.succ(1) # => succ(1)
+SuccMatcher.new.run(expression)
+ # => <Metamorpher::Matching::Match root=succ(0), substitution={:x=>1}>
+ 
+expression = Metamorpher.builder.succ(:n) # => succ(n)
+SuccMatcher.new.run(expression)
+ # => <Metamorpher::Matching::Match root=succ(n), substitution={:x=>n}>
+
+expression = Metamorpher.builder.succ(Metamorpher.builder.succ(:n)) # => succ(succ(n))
+SuccMatcher.new.run(expression)
+ # => <Metamorpher::Matching::Match root=succ(succ(n)), substitution={:x=>succ(n)}> 
 ```
     
 #### Conditional variables
 
-By default, a variable matches any literal. For some types of rewriting, variables should match only those literals that satisfy some condition. Metamorpher provides conditional variables for this purpose. For example:
+By default, a variable matches any literal. Matching is more powerful when variables are able to match only those literals that satisfy some condition. Metamorpher provides conditional variables for this purpose.
+
+For example, suppose that we wish to create a matcher that only matches method calls of the form `User.find_by_XXX`, but not calls to `User.find`, `User.where` or `User.find_by`. The following matcher achieves this, by using a conditional variable (`method`). Note that the condition is specified via the block passed when building the variable:
 
 ```ruby
 class DynamicFinderMatcher
@@ -117,7 +172,7 @@ class DynamicFinderMatcher
     builder.literal!(
       :".",
       :User,
-      builder._method { |method| method.name =~ /^find_by_/ }
+      builder._method { |literal| literal.name =~ /^find_by_/ }
     )
   end
 end
@@ -133,7 +188,9 @@ DynamicFinderMatcher.new.run(expression)
 
 #### Greedy variables
 
-Sometimes a rewriter needs to be able to match an expression that contains a variable number of subexpressions. Metamorpher provides greedy variables for this purpose. For example:
+Sometimes a matchers needs to be able to match an expression that contains a variable number of subexpressions. Metamorpher provides greedy variables for this purpose.
+
+For example, suppose that we wish to create a matcher that works for an expression, `add`, that can have 1 or more children. The following matcher achieves this, by using a greedy variable (`args`).
 
 ```ruby
 class MultiAddMatcher
@@ -153,6 +210,85 @@ MultiAddMatcher.new.run(Metamorpher.builder.add(1,2,3))
  # => #<Metamorpher::Matching::Match root=add(1,2,3), substitution={:args=>[1, 2, 3]}> 
 ```
 
+### Building terms
+
+The primary data structure used for [rewriting](#rewriters) and for [matching](#matchers) is a term. A term is a tree (i.e., an acyclic graph). The nodes of the tree are either:
+
+* Literal - a node of the abstract-syntax tree of a program.
+* Variable - a named node, which is bound to a subterm (subtree) during matching
+* Greedy variable - a variable that is bound to a set of subterms during matching
+* Derivation - a placeholder node, which is replaced during rewriting
+
+To simplify the construction of terms, metamorpher provides the `Metamorpher::Builder` class:
+
+```ruby
+require "metamorpher"
+
+builder = Metamorpher::Builder.new
+
+builder.literal! :succ # => succ
+builder.literal! 4 # => 4
+
+builder.variable! :n # => N
+builder.greedy_variable! :n # => N+
+
+builder.derivation! :singular do |singular, builder|
+  builder.literal!(singular.name + "s")
+end
+ # [SINGULAR] -> ...
+ 
+builder.derivation! :key, :value do |key, value, builder|
+  builder.pair(key, value)
+end
+ # [KEY, VALUE] -> ...
+```
+
+Variables can be conditional, in which case they are specified by passing a block:
+
+```ruby
+builder.variable!(:method) { |literal| literal.name =~ /^find_by_/ } # => METHOD?
+builder.greedy_variable!(:pairs) { |literals| literals.size.even? } #=> PAIRS+?
+```
+
+#### Shorthands
+
+The builder provides a method missing shorthand for constructing literals, variables and greedy variables:
+
+```ruby
+builder.succ # => succ
+builder._n # => N 
+builder._n :greedy # => N+
+```
+
+Conditional variables can also be constructed using this shorthand:
+
+```ruby
+builder._method { |literal| literal.name =~ /^find_by_/ } #=> METHOD?
+builder._pairs(:greedy) { |literal| literal.name =~ /^find_by_/ } #=> PAIRS+?
+```
+
+#### Coercion of non-terms to literals
+
+When constructing a literal, the builder ensures that any children are converted to literals if they are not already a term:
+
+```ruby
+builder.literal!(:add, :x, :y) # => add(x, y)
+builder.add(:x, :y) # => add(x, y)
+```
+
+Without automatic coercion, the statements above would be written as follows. Note that they are more verbose:
+
+```ruby
+builder.literal!(:add, builder.literal!(:x), builder.literal!(:y)) # => add(x, y)
+builder.add(builder.x, builder.y) # => add(x, y)
+```
+
+Note that coercion isn't necessary (and isn't applied) when the children of a literal are already terms:
+
+```ruby
+builder.literal!(:add, builder.variable!(:n), builder.variable!(:m)) # => add(N, M)
+builder.add(builder._n, builder._m) # => add(N, M)
+```
 
 ### Practical examples    
 
