@@ -119,6 +119,26 @@ MultiAddMatcher.new.run(Metamorpher.builder.add(1,2,3))
 ```
 
 ### Derivations
+
+Sometimes a rewriter needs to adjust matched parts of an expression when building the replacement expression. Metamorpher provides derivations for this purpose. For example:
+
+```ruby
+class PluraliseRewriter
+  include Metamorpher::Rewriter
+  
+  def pattern
+    builder._singular
+  end
+  
+  def replacement
+    builder.derivation! :singular do |singular|
+      builder.literal!(singular.name + "s")
+    end
+  end
+end
+
+PluraliseRewriter.new.run(Metamorpher.builder.literal! "dog") # => "dogs"
+```
     
 ### Rewriting Ruby programs
 To use metamorpher to rewrite Ruby programs, I recommend the wonderful [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems.
