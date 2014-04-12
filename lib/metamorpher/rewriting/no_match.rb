@@ -3,6 +3,9 @@ require "attributable"
 module Metamorpher
   module Rewriting
     class NoMatch
+      extend Attributable
+      attributes
+
       def matches?
         false
       end

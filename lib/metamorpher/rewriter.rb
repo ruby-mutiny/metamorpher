@@ -1,3 +1,4 @@
+require "metamorpher/builder"
 require "metamorpher/rewriting/rule"
 
 module Metamorpher
