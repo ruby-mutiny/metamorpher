@@ -1,6 +1,7 @@
 require "metamorpher/builders/literal_builder"
 require "metamorpher/builders/variable_builder"
 require "metamorpher/builders/greedy_variable_builder"
+require "metamorpher/builders/derivation_builder"
 
 module Metamorpher
   class Builder
@@ -8,16 +9,17 @@ module Metamorpher
     def_delegator :literal_builder, :literal!
     def_delegator :variable_builder, :variable!
     def_delegator :greedy_variable_builder, :greedy_variable!
+    def_delegator :derivation_builder, :derivation!
 
     def method_missing(method, *arguments, &block)
-      builders
+      builders_with_shorthand
         .find { |builder| builder.shorthand?(method, *arguments, &block) }
         .method_missing(method, *arguments, &block)
     end
 
     private
 
-    def builders
+    def builders_with_shorthand
       @builders ||= [
         literal_builder,
         variable_builder,
@@ -35,6 +37,10 @@ module Metamorpher
 
     def greedy_variable_builder
       @greedy_variable_builder ||= Builders::GreedyVariableBuilder.new
+    end
+
+    def derivation_builder
+      @derivation_builder ||= Builders::DerivationBuilder.new
     end
   end
 end
