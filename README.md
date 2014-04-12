@@ -100,7 +100,23 @@ DynamicFinderMatcher.new.run(expression)
 
 Sometimes a rewriter needs to be able to match an expression that contains a variable number of subexpressions. Metamorpher provides greedy variables for this purpose. For example:
 
-__TODO__ example of greedy variables
+```ruby
+class MultiAddMatcher
+  include Metamorpher::Matcher
+  
+  def pattern
+    builder.add(
+      builder._args(:greedy)
+    )
+  end
+end
+
+MultiAddMatcher.new.run(Metamorpher.builder.add(1,2))
+ # => #<Metamorpher::Matching::Match root=add(1,2), substitution={:args=>[1, 2]}> 
+
+MultiAddMatcher.new.run(Metamorpher.builder.add(1,2,3))
+ # => #<Metamorpher::Matching::Match root=add(1,2,3), substitution={:args=>[1, 2, 3]}> 
+```
 
 ### Derivations
     
