@@ -2,7 +2,7 @@ require "metamorpher/literal"
 require "metamorpher/variable"
 
 module Metamorpher
-  class TermBuilder
+  class Builder
     def literal!(name, *children)
       Literal.new(name: name, children: children.map { |c| termify(c) })
     end

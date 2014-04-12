@@ -1,7 +1,7 @@
-require "metamorpher/term_builder"
+require "metamorpher/builder"
 
 module Metamorpher
-  describe TermBuilder do
+  describe Builder do
     describe "literal!" do
       it "should create an instance of Literal" do
         actual = subject.literal!(:a)
