@@ -8,8 +8,8 @@ module Metamorpher
       attributes greedy?: false, condition: DEFAULT_CONDITION
 
       def inspect
-        name.to_s.upcase + 
-        (greedy? ? "+" : "") + 
+        name.to_s.upcase +
+        (greedy? ? "+" : "") +
         (condition != DEFAULT_CONDITION ? "?" : "")
       end
 
