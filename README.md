@@ -72,7 +72,35 @@ end
     
 #### Conditional variables
 
+By default, a variable matches any literal. For some types of rewriting, variables should match only those literals that satisfy some condition. Metamorpher provides conditional variables for this purpose. For example:
+
+```ruby
+class DynamicFinderMatcher
+  include Metamorpher::Matcher
+  
+  def pattern
+    builder.literal!(
+      :".",
+      :User,
+      builder._method { |method| method.name =~ /^find_by_/ }
+    )
+  end
+end
+
+expression = Metamorpher.builder.literal!(:".", :User, :find_by_name) # => .(User, find_by_name)
+DynamicFinderMatcher.new.run(expression)
+ # => #<Metamorpher::Matching::Match root=.(User, find_by_name), substitution={:method=>find_by_name}> 
+
+expression = Metamorpher.builder.literal!(:".", :User, :find) # => .(User, find)
+DynamicFinderMatcher.new.run(expression)
+ # => #<Metamorpher::Matching::NoMatch>
+```
+
 #### Greedy variables
+
+Sometimes a rewriter needs to be able to match an expression that contains a variable number of subexpressions. Metamorpher provides greedy variables for this purpose. For example:
+
+__TODO__ example of greedy variables
 
 ### Derivations
     
