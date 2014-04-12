@@ -4,10 +4,13 @@ require "metamorpher/matching/match"
 module Metamorpher
   module Rewriting
     class Variable < Term
-      attributes greedy?: false, condition: ->(_) { true }
+      DEFAULT_CONDITION = ->(_) { true }
+      attributes greedy?: false, condition: DEFAULT_CONDITION
 
       def inspect
-        name.to_s.upcase
+        name.to_s.upcase + 
+        (greedy? ? "+" : "") + 
+        (condition != DEFAULT_CONDITION ? "?" : "")
       end
 
       def substitute(substitution)
