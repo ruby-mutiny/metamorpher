@@ -29,6 +29,15 @@ class SuccZeroRewriter
 end
 ```
 
+This example is simple, but demonstrates many of the key concepts in metamorpher. You might now want to read about:
+
+* [Rewriters](#rewriters) - how transform expressions into other expressions.
+* [Matchers](#matchers) - how to determine whether an expression adheres to a pattern (i.e., matches a term).
+* [Building terms](#building-terms) - how to create the data structure (terms) used by Rewriters and Matchers.
+* [Practical examples](#practical-examples) - examples of using metamorpher to refactor Ruby programs
+
+### Rewriters
+
 Note that `run` has no effect when called on an expression that does not match `pattern`:
 
 ```ruby
@@ -36,7 +45,33 @@ expression = Metamorpher.builder.succ(1) # => succ(1)
 SuccZeroRewriter.new.run(expression) # => succ(1)
 ```
 
-### Variables
+#### Variables
+
+#### Derivations
+
+Sometimes a rewriter needs to adjust matched parts of an expression when building the replacement expression. Metamorpher provides derivations for this purpose. For example:
+
+```ruby
+class PluraliseRewriter
+  include Metamorpher::Rewriter
+  
+  def pattern
+    builder._singular
+  end
+  
+  def replacement
+    builder.derivation! :singular do |singular|
+      builder.literal!(singular.name + "s")
+    end
+  end
+end
+
+PluraliseRewriter.new.run(Metamorpher.builder.literal! "dog") # => "dogs"
+```
+
+### Matching
+
+#### Variables
 
 Rewriting becomes a lot more useful when we are able to capture some parts of the expression during matching, and then re-use the captured parts in the replacement. Metamorpher provides variables for this purpose. For example:
 
@@ -118,29 +153,10 @@ MultiAddMatcher.new.run(Metamorpher.builder.add(1,2,3))
  # => #<Metamorpher::Matching::Match root=add(1,2,3), substitution={:args=>[1, 2, 3]}> 
 ```
 
-### Derivations
 
-Sometimes a rewriter needs to adjust matched parts of an expression when building the replacement expression. Metamorpher provides derivations for this purpose. For example:
+### Practical examples    
 
-```ruby
-class PluraliseRewriter
-  include Metamorpher::Rewriter
-  
-  def pattern
-    builder._singular
-  end
-  
-  def replacement
-    builder.derivation! :singular do |singular|
-      builder.literal!(singular.name + "s")
-    end
-  end
-end
-
-PluraliseRewriter.new.run(Metamorpher.builder.literal! "dog") # => "dogs"
-```
-    
-### Rewriting Ruby programs
+#### Rewriting Ruby programs
 To use metamorpher to rewrite Ruby programs, I recommend the wonderful [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems.
 
 __TODO__ example of rewriting a Ruby program
