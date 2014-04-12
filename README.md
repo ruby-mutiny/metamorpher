@@ -4,50 +4,28 @@ A term rewriting library for transforming (Ruby) programs.
 
 ## Basic usage
 
-Here's a very simple example that rewrites expressions of the form `2 + 2` to expressions of the form `4`:
+Here's a very simple example that rewrites expressions of the form `succ(0)` to expressions of the form `1`:
 
 ```ruby
-require "metamorpher/literal"
+require "metamorpher"
 
-expression = Metamorpher::Literal.new(
-  name: :+,
-  children: [
-    Metamorpher::Literal.new(name: 2),
-    Metamorpher::Literal.new(name: 2)
-  ]
-) # => +(2,2)
-
-TwoPlusTwoRewriter.new.rewrite(expression) # => 4
+expression = Metamorpher.builder.succ(0) # => succ(0)
+  
+TwoPlusTwoRewriter.new.run(expression) # => 1
 ```
     
 The implementation of TwoPlusTwoRewriter is as follows:
 
 ```ruby
-require "metamorpher/rule"
-
 class TwoPlusTwoRewriter
-  def rewrite(expression)
-    rule.apply(expression)
-  end
-  
-  private
-  
-  def rule
-    Metamorpher::Rule.new(pattern: pattern, replacement: replacement)
-  end
+  include Metamorpher::Rewriter
   
   def pattern
-    Metamorpher::Literal.new(
-      name: :+,
-      children: [
-        Metamorpher::Literal.new(name: 2),
-        Metamorpher::Literal.new(name: 2)
-      ]
-    )
+    builder.succ(0)
   end
   
   def replacement
-    Metamorpher::Literal.new(name: 4)
+    builder.literal!(1)
   end
 end
 ```
@@ -55,15 +33,9 @@ end
 Note that a rule has no effect if it is applied to an expression that does not match its pattern:
 
 ```ruby
-expression = Metamorpher::Literal.new(
-  name: :+,
-  children: [
-    Metamorpher::Literal.new(name: 3),
-    Metamorpher::Literal.new(name: 2)
-  ]
-) # => +(3,2)
+expression = Metamorpher.builder.succ(1) # => succ(1)
 
-TwoPlusTwoRewriter.new.rewrite(expression) # => +(3,2)
+TwoPlusTwoRewriter.new.run(expression) # => succ(1)
 ```
 
 ### Variables
@@ -71,78 +43,38 @@ TwoPlusTwoRewriter.new.rewrite(expression) # => +(3,2)
 Rewriting becomes a lot more useful when we are able to capture some parts of the expression during matching, and then re-use the captured parts in the replacement. Metamorpher provides variables for this purpose. For example:
 
 ```ruby
-expression = Metamorpher::Literal.new(
-  name: :inc,
-  children: [Metamorpher::Literal.new(name: 2)]
-) # => inc(2)
+expression = Metamorpher.builder.inc(2) # => inc(2)
 
 IncrementRewriter.new.rewrite(expression) # => +(2,1)
 
 
-expression = Metamorpher::Literal.new(
-  name: :inc,
-  children: [Metamorpher::Literal.new(name: 3)]
-) # => inc(3)
+expression = Metamorpher.builder.inc(3) # => inc(3)
 
 IncrementRewriter.new.rewrite(expression) # => +(3,1)
 
 
-expression = Metamorpher::Literal.new(
-  name: :inc,
-  children: [Metamorpher::Literal.new(name: :n)]
-) # => inc(n)
+expression = Metamorpher.builder.inc(:n) # => inc(n)
 
-IncrementRewriter.new.rewrite(expression) # => +(:n,1)
+IncrementRewriter.new.rewrite(expression) # => +(n,1)
 
 
-expression = Metamorpher::Literal.new(
-  name: :inc,
-  children: [
-    Metamorpher::Literal.new(
-      name: :inc,
-      children: [Metamorpher::Literal.new(name: 2)]
-    )
-  ]
-) # => inc(inc(2))
+expression = Metamorpher.builder.inc(Metamorpher.builder.inc(:n)) # => inc(inc(n))
 
-IncrementRewriter.new.rewrite(expression) # => +(inc(2),1)
+IncrementRewriter.new.rewrite(expression) # => +(inc(n),1)
 ```
 
 The implementation of `IncrementRewriter` makes uses of a variable to capture the argument passed to `inc`:
 
 ```ruby
-require "metamorpher/literal"
-require "metamorpher/variable"
-require "metamorpher/rule"
-
 class IncrementRewriter
-  def rewrite(expression)
-    rule.apply(expression)
-  end
-  
-  private
-  
-  def rule
-    Metamorpher::Rule.new(pattern: pattern, replacement: replacement)
-  end
+  include Metamorpher::Rewriter
   
   def pattern
-    Metamorpher::Literal.new(
-      name: :inc,
-      children: [
-        Metamorpher::Variable.new(name: :incrementee),
-      ]
-    )
+    builder.inc(builder._incrementee)
   end
   
   def replacement
-    Metamorpher::Literal.new(
-      name: :+,
-      children: [
-        Metamorpher::Variable.new(name: :incrementee),
-        Metamorpher::Literal.new(name: 1),
-      ]
-    )
+    builder.+(builder._incrementee, 1)
   end
 end
 ```
