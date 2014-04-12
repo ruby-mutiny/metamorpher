@@ -1,6 +1,6 @@
 require "metamorpher"
 require "metamorpher/matcher"
-require "metamorpher/rewriting/match"
+require "metamorpher/matching/match"
 
 module Metamorpher
   class SimpleMatcher
@@ -16,7 +16,7 @@ module Metamorpher
 
     it "should performing matching" do
       expression = builder.literal! 1
-      expected = Rewriting::Match.new(root: expression)
+      expected = Matching::Match.new(root: expression)
 
       expect(subject.run(expression)).to eq(expected)
     end

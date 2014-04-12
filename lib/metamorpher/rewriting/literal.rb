@@ -1,6 +1,6 @@
 require "metamorpher/rewriting/term"
-require "metamorpher/rewriting/match"
-require "metamorpher/rewriting/no_match"
+require "metamorpher/matching/match"
+require "metamorpher/matching/no_match"
 
 module Metamorpher
   module Rewriting
@@ -24,7 +24,7 @@ module Metamorpher
         if name == other.name
           children_match(other)
         else
-          NoMatch.new
+          Matching::NoMatch.new
         end
       end
 
@@ -48,7 +48,7 @@ module Metamorpher
         children
           .zip(other.children)
           .map { |child, other_child| child.match(other_child) }
-          .reduce(Match.new(root: other), :combine)
+          .reduce(Matching::Match.new(root: other), :combine)
       end
     end
   end

@@ -1,5 +1,5 @@
 require "metamorpher/rewriting/term"
-require "metamorpher/rewriting/match"
+require "metamorpher/matching/match"
 
 module Metamorpher
   module Rewriting
@@ -17,9 +17,9 @@ module Metamorpher
       def match(other)
         captured = capture(other)
         if condition.call(captured)
-          Match.new(substitution: { name => captured })
+          Matching::Match.new(substitution: { name => captured })
         else
-          NoMatch.new
+          Matching::NoMatch.new
         end
       end
 
