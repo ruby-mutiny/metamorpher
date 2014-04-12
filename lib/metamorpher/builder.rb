@@ -1,44 +1,40 @@
-require "metamorpher/literal"
-require "metamorpher/variable"
+require "metamorpher/builders/literal_builder"
+require "metamorpher/builders/variable_builder"
+require "metamorpher/builders/greedy_variable_builder"
 
 module Metamorpher
   class Builder
-    def literal!(name, *children)
-      Literal.new(name: name, children: children.map { |c| termify(c) })
-    end
-
-    def variable!(name, &block)
-      if block
-        Variable.new(name: name, condition: block)
-      else
-        Variable.new(name: name)
-      end
-    end
-
-    def greedy_variable!(name, &block)
-      if block
-        Variable.new(name: name, condition: block, greedy?: true)
-      else
-        Variable.new(name: name, greedy?: true)
-      end
-    end
+    extend Forwardable
+    def_delegator :literal_builder, :literal!
+    def_delegator :variable_builder, :variable!
+    def_delegator :greedy_variable_builder, :greedy_variable!
 
     def method_missing(method, *arguments, &block)
-      if method.to_s.start_with?("_") && !arguments.empty? && arguments.first == :greedy
-        greedy_variable!(method[1..-1].to_sym, *arguments[1..-1], &block)
-
-      elsif method.to_s.start_with?("_")
-        variable!(method[1..-1].to_sym, *arguments, &block)
-
-      else
-        literal!(method, *arguments)
-      end
+      builders
+        .find { |builder| builder.shorthand?(method, *arguments, &block) }
+        .method_missing(method, *arguments, &block)
     end
 
     private
 
-    def termify(item)
-      item.kind_of?(Term) ? item : literal!(item)
+    def builders
+      @builders ||= [
+        literal_builder,
+        variable_builder,
+        greedy_variable_builder
+      ]
+    end
+
+    def literal_builder
+      @literal_builder ||= Builders::LiteralBuilder.new
+    end
+
+    def variable_builder
+      @variable_builder ||= Builders::VariableBuilder.new
+    end
+
+    def greedy_variable_builder
+      @greedy_variable_builder ||= Builders::GreedyVariableBuilder.new
     end
   end
 end
