@@ -8,7 +8,7 @@ module Metamorpher
       end
 
       def shorthand?(method, *arguments, &block)
-        !method.to_s.start_with?("_")
+        method =~ /^[a-z]/
       end
 
       def method_missing(method, *arguments, &block)
