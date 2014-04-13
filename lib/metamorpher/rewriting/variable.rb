@@ -27,7 +27,7 @@ module Metamorpher
       end
 
       def capture(other)
-        greedy? ? other.and_younger_siblings : other
+        greedy? ? other.with_younger_siblings : other
       end
     end
   end

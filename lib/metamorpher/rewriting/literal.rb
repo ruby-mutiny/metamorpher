@@ -20,6 +20,10 @@ module Metamorpher
         end
       end
 
+      def children_younger_than_or_equal_to(child)
+        children[(index(child))..-1]
+      end
+
       def match(other)
         if name == other.name
           children_match(other)
@@ -43,6 +47,11 @@ module Metamorpher
       end
 
       private
+
+      def index(child)
+        children.index(child) ||
+        fail(ArgumentError, "#{child.inspect} is not a child of #{inspect}")
+      end
 
       def children_match(other)
         children

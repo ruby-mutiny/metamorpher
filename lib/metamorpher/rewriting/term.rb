@@ -8,12 +8,12 @@ module Metamorpher
 
       attr_accessor :parent
 
-      def younger_siblings
-        parent.children[parent.children.index(self) + 1..-1]
+      def inspect
+        name
       end
 
-      def and_younger_siblings
-        younger_siblings.unshift(self)
+      def with_younger_siblings
+        parent.children_younger_than_or_equal_to(self)
       end
     end
   end
