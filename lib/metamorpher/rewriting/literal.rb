@@ -25,7 +25,7 @@ module Metamorpher
       end
 
       def match(other)
-        if name == other.name
+        if other && other.name == name
           children_match(other)
         else
           Matching::NoMatch.new
