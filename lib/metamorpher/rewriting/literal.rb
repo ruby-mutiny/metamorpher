@@ -39,11 +39,15 @@ module Metamorpher
         )
       end
 
-      def replace(child, replacement)
-        Literal.new(
-          name: name,
-          children: children.map { |original| original == child ? replacement : original }
-        )
+      def replace(replacee, replacement)
+        if self == replacee
+          replacement
+        else
+          Literal.new(
+            name: name,
+            children: children.map { |child| child.replace(replacee, replacement) }
+          )
+        end
       end
 
       private
