@@ -1,10 +1,11 @@
 require "attributable"
+require "metamorpher/rewriting/traverser"
 
 module Metamorpher
   module Rewriting
     class Rule
       extend Attributable
-      attributes :pattern, :replacement
+      attributes :pattern, :replacement, traverser: Traverser.new
 
       def apply(ast)
         result = match(ast)
@@ -19,16 +20,14 @@ module Metamorpher
       private
 
       def match(ast)
-        waiting, discovered, result = [ast], [], nil
-        loop do
-          current = waiting.pop
-          unless discovered.include?(current)
-            discovered << current
-            waiting.concat(current.children) if current.respond_to?(:children)
-          end
-          result = pattern.match(current)
-          return result if result.matches?
-        end
+        matches(ast).first
+      end
+
+      def matches(ast)
+        traverser.traverse(ast)
+          .lazy # only compute the next match when needed
+          .map { |current| pattern.match(current) }
+          .select { |result| result.matches? }
       end
     end
   end
