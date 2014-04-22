@@ -26,7 +26,10 @@ module Metamorpher
 
       def match(other)
         if other && other.name == name
-          children_match(other)
+          children
+            .zip(other.children)
+            .map { |child, other_child| child.match(other_child) }
+            .reduce(Matching::Match.new(root: other), :combine)
         else
           Matching::NoMatch.new
         end
@@ -55,13 +58,6 @@ module Metamorpher
       def index(child)
         children.index(child) ||
         fail(ArgumentError, "#{child.inspect} is not a child of #{inspect}")
-      end
-
-      def children_match(other)
-        children
-          .zip(other.children)
-          .map { |child, other_child| child.match(other_child) }
-          .reduce(Matching::Match.new(root: other), :combine)
       end
     end
   end
