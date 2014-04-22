@@ -8,20 +8,24 @@ module Metamorpher
       attributes :pattern, :replacement, traverser: Traverser.new
 
       def apply(ast)
-        rewrite(ast, find_match(ast))
+        rewrite_all(ast, matches_for(ast).take(1))
+      end
+
+      def reduce(ast)
+        rewrite_all(ast, matches_for(ast))
       end
 
       private
+
+      def rewrite_all(ast, matches)
+        matches.reduce(ast) { |a, e| rewrite(a, e) }
+      end
 
       def rewrite(ast, match)
         ast.replace(match.root, replacement.substitute(match.substitution))
       end
 
-      def find_match(ast)
-        find_matches(ast).first
-      end
-
-      def find_matches(ast)
+      def matches_for(ast)
         traverser.traverse(ast)
           .lazy # only compute the next match when needed
           .map { |current| pattern.match(current) }

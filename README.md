@@ -22,7 +22,7 @@ class SuccZeroRewriter
 end
 
 expression = Metamorpher.builder.succ(0) # => succ(0)
-SuccZeroRewriter.new.run(expression) # => 1
+SuccZeroRewriter.new.reduce(expression) # => 1
 ```
 
 This example is simple, but demonstrates many of the key concepts in metamorpher. You might now want to read about:
@@ -36,7 +36,7 @@ This example is simple, but demonstrates many of the key concepts in metamorpher
 
 Rewriters perform small, in-place changes to an expression. They can be used for program transformations, such as refactorings. For some simple program transformations, a regular expression can be used on the program source. For more complicated transformations, a term rewriting system (such as the one provided by `Metamorpher::Rewriter`) is likely to be a better fit.
 
-Metamorpher provides the `Metamorpher::Rewriter` module for specifying rewriters. Include it, specify a `pattern` and a `replacement`, and then call `run(expression)`:
+Metamorpher provides the `Metamorpher::Rewriter` module for specifying rewriters. Include it, specify a `pattern` and a `replacement`, and then call `reduce(expression)`:
 
 ```ruby
 require "metamorpher"
@@ -54,14 +54,32 @@ class SuccZeroRewriter
 end
 
 expression = Metamorpher.builder.succ(0) # => succ(0)
-SuccZeroRewriter.new.run(expression) # => 1
+SuccZeroRewriter.new.reduce(expression) # => 1
 ```
 
-Note that `run` has no effect when called on an expression that does not match `pattern`:
+Note that `reduce` has no effect when called on an expression that does not match `pattern`:
 
 ```ruby
 expression = Metamorpher.builder.succ(1) # => succ(1)
-SuccZeroRewriter.new.run(expression) # => succ(1)
+SuccZeroRewriter.new.reduce(expression) # => succ(1)
+```
+
+A call to `reduce` will return a literal that cannot be reduced any further by this rewriter:
+
+```ruby
+expression = Metamorpher.builder.add(
+  Metamorpher.builder.succ(0),
+  Metamorpher.builder.succ(0)
+)
+ # => succ(0)
+
+SuccZeroRewriter.new.reduce(expression) # => add(1, 1)
+```
+
+A call to `apply` will instead return a literal after a single application of the rewriter:
+
+```ruby
+SuccZeroRewriter.new.apply(expression) # => add(1, succ(0))
 ```
 
 #### Derivations
@@ -85,7 +103,7 @@ class PluraliseRewriter
   end
 end
 
-PluraliseRewriter.new.run(Metamorpher.builder.literal! "dog") # => "dogs"
+PluraliseRewriter.new.apply(Metamorpher.builder.literal! "dog") # => "dogs"
 ```
 
 Derivations can be based on more than one captured variable. In which case the call to `derivation!` and the block take more than one argument:

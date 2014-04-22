@@ -4,7 +4,7 @@ require "metamorpher/rewriting/rule"
 module Metamorpher
   module Rewriter
     extend Forwardable
-    def_delegator :rule, :apply, :run
+    def_delegators :rule, :apply, :reduce
 
     def rule
       @rule ||= Rewriting::Rule.new(pattern: pattern, replacement: replacement)
