@@ -11,18 +11,20 @@ module Metamorpher
         rewrite_all(ast, matches_for(ast).take(1))
       end
 
-      def reduce(ast)
-        rewrite_all(ast, matches_for(ast))
+      def reduce(ast, &block)
+        rewrite_all(ast, matches_for(ast), &block)
       end
 
       private
 
-      def rewrite_all(ast, matches)
-        matches.reduce(ast) { |a, e| rewrite(a, e) }
+      def rewrite_all(ast, matches, &block)
+        matches.reduce(ast) { |a, e| rewrite(a, e, &block) }
       end
 
-      def rewrite(ast, match)
-        ast.replace(match.root, replacement.substitute(match.substitution))
+      def rewrite(ast, match, &block)
+        original, rewritten = match.root, replacement.substitute(match.substitution)
+        block.call(original, rewritten) if block
+        ast.replace(original, rewritten)
       end
 
       def matches_for(ast)

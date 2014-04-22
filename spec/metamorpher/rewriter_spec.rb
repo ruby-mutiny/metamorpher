@@ -24,6 +24,13 @@ module Metamorpher
         expect(subject.reduce(original)).to eq(builder.add(1, 1))
       end
 
+      it "reduce should yield the original and replacement literals" do
+        expect { |b| subject.reduce(original, &b) }.to yield_successive_args(
+          [original.children.first, subject.replacement],
+          [original.children.last, subject.replacement]
+        )
+      end
+
       # Failing due to a bug in rewrite / replace -> all instances of replacee
       # are replaced not only the matched instance.
       # I think the solution might be to have a match capture more information
