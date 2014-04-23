@@ -15,7 +15,7 @@ module Metamorpher
 
       def source_location_for(literal)
         ast = ast_for(literal)
-        (ast.loc.expression.begin_pos..ast.loc.expression.end_pos)
+        (ast.loc.expression.begin_pos..(ast.loc.expression.end_pos - 1))
       end
 
       private

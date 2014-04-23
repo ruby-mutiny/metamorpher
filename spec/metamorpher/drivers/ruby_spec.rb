@@ -19,9 +19,9 @@ module Metamorpher
       it "should be able to provide source location of literals" do
         subject.parse(source)
 
-        expect(subject.source_location_for(literal)).to eq(0..5)
-        expect(subject.source_location_for(literal.children.first)).to eq(0..1)
-        expect(subject.source_location_for(literal.children.last)).to eq(4..5)
+        expect(subject.source_location_for(literal)).to eq(0..4)
+        expect(subject.source_location_for(literal.children.first)).to eq(0..0)
+        expect(subject.source_location_for(literal.children.last)).to eq(4..4)
       end
     end
   end
