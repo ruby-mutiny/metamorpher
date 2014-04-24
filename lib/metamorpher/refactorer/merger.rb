@@ -6,7 +6,7 @@ module Metamorpher
       def merge(*replacements, &block)
         original.dup.tap do |merged|
           replacements.reduce(0) do |offset, replacement|
-            yield replacement if block
+            yield replacement.dup if block
             replacement.move_by!(offset)
             replacement.merge_into(merged)
             offset + replacement.offset
