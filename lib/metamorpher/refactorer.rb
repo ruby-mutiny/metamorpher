@@ -7,7 +7,8 @@ require "metamorpher/drivers/ruby"
 module Metamorpher
   module Refactorer
     def refactor(src, &block)
-      replacements = reduce_to_replacements(driver.parse(src))
+      literal = driver.parse(src)
+      replacements = reduce_to_replacements(literal)
       Merger.new(src).merge(*replacements, &block)
     end
 
