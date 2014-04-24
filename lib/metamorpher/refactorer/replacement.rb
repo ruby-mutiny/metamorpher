@@ -3,8 +3,9 @@ require "attributable"
 module Metamorpher
   module Refactorer
     Replacement = Struct.new(:position, :value) do
-      def move_by!(offset)
-        self.position = (position.begin + offset)..(position.end + offset)
+      def slide(offset)
+        new_position = (position.begin + offset)..(position.end + offset)
+        Replacement.new(new_position, value)
       end
 
       def merge_into(destination)

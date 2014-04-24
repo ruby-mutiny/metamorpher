@@ -5,18 +5,17 @@ module Metamorpher
     describe Replacement do
       subject { Replacement.new(4..6, "bar") }
 
-      describe "move_by!" do
-        it "should change the position of the existing replacement" do
-          subject.move_by! 2
-
-          expect(subject.position).to eq(6..8)
+      describe "slide" do
+        it "should return a replacement with the new position" do
+          expect(subject.slide(2).position).to eq(6..8)
         end
 
-        it "should work for multiple calls" do
-          subject.move_by! 2
-          subject.move_by! 10
+        it "should not alter the value" do
+          expect(subject.slide(2).value).to eq("bar")
+        end
 
-          expect(subject.position).to eq(16..18)
+        it "should be chainable" do
+          expect(subject.slide(2).slide(10).position).to eq(16..18)
         end
       end
 
