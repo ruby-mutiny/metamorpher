@@ -1,5 +1,5 @@
 require "metamorpher/builder"
-require "metamorpher/rewriting/rule"
+require "metamorpher/rewriter/rule"
 
 module Metamorpher
   module Rewriter
@@ -7,7 +7,7 @@ module Metamorpher
     def_delegators :rule, :apply, :reduce
 
     def rule
-      @rule ||= Rewriting::Rule.new(pattern: pattern, replacement: replacement)
+      @rule ||= Rewriter::Rule.new(pattern: pattern, replacement: replacement)
     end
 
     def builder

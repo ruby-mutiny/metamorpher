@@ -132,12 +132,12 @@ end
 
 expression = Metamorpher.builder.succ(0) # => succ(0)
 result = SuccZeroMatcher.new.run(expression)
- # => <Metamorpher::Matching::Match root=succ(0), substitution={}> 
+ # => <Metamorpher::Matcher::Match root=succ(0), substitution={}> 
 result.matches? # => true
 
 expression = Metamorpher.builder.succ(1) # => succ(1)
 result = SuccZeroMatcher.new.run(expression)
- # => <Metamorpher::Matching::NoMatch>
+ # => <Metamorpher::Matcher::NoMatch>
 result.matches? # => false
 ```
 
@@ -158,19 +158,19 @@ end
 
 expression = Metamorpher.builder.succ(0) # => succ(0)
 SuccMatcher.new.run(expression)
- # => <Metamorpher::Matching::Match root=succ(0), substitution={:x=>0}> 
+ # => <Metamorpher::Matcher::Match root=succ(0), substitution={:x=>0}> 
 
 expression = Metamorpher.builder.succ(1) # => succ(1)
 SuccMatcher.new.run(expression)
- # => <Metamorpher::Matching::Match root=succ(0), substitution={:x=>1}>
+ # => <Metamorpher::Matcher::Match root=succ(0), substitution={:x=>1}>
  
 expression = Metamorpher.builder.succ(:n) # => succ(n)
 SuccMatcher.new.run(expression)
- # => <Metamorpher::Matching::Match root=succ(n), substitution={:x=>n}>
+ # => <Metamorpher::Matcher::Match root=succ(n), substitution={:x=>n}>
 
 expression = Metamorpher.builder.succ(Metamorpher.builder.succ(:n)) # => succ(succ(n))
 SuccMatcher.new.run(expression)
- # => <Metamorpher::Matching::Match root=succ(succ(n)), substitution={:x=>succ(n)}> 
+ # => <Metamorpher::Matcher::Match root=succ(succ(n)), substitution={:x=>succ(n)}> 
 ```
     
 #### Conditional variables
@@ -194,11 +194,11 @@ end
 
 expression = Metamorpher.builder.literal!(:".", :User, :find_by_name) # => .(User, find_by_name)
 DynamicFinderMatcher.new.run(expression)
- # => #<Metamorpher::Matching::Match root=.(User, find_by_name), substitution={:method=>find_by_name}> 
+ # => #<Metamorpher::Matcher::Match root=.(User, find_by_name), substitution={:method=>find_by_name}> 
 
 expression = Metamorpher.builder.literal!(:".", :User, :find) # => .(User, find)
 DynamicFinderMatcher.new.run(expression)
- # => #<Metamorpher::Matching::NoMatch>
+ # => #<Metamorpher::Matcher::NoMatch>
 ```
 
 #### Greedy variables
@@ -219,10 +219,10 @@ class MultiAddMatcher
 end
 
 MultiAddMatcher.new.run(Metamorpher.builder.add(1,2))
- # => #<Metamorpher::Matching::Match root=add(1,2), substitution={:args=>[1, 2]}> 
+ # => #<Metamorpher::Matcher::Match root=add(1,2), substitution={:args=>[1, 2]}> 
 
 MultiAddMatcher.new.run(Metamorpher.builder.add(1,2,3))
- # => #<Metamorpher::Matching::Match root=add(1,2,3), substitution={:args=>[1, 2, 3]}> 
+ # => #<Metamorpher::Matcher::Match root=add(1,2,3), substitution={:args=>[1, 2, 3]}> 
 ```
 
 ### Rewriters

@@ -1,8 +1,8 @@
 require "attributable"
-require "metamorpher/rewriting/traverser"
+require "metamorpher/rewriter/traverser"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     class Rule
       extend Attributable
       attributes :pattern, :replacement, traverser: Traverser.new

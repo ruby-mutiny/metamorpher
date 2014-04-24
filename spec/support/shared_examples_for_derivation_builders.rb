@@ -1,7 +1,7 @@
-require "metamorpher/rewriting/literal"
+require "metamorpher/rewriter/literal"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     shared_examples "a derivation builder" do
       describe "derivation!" do
         it "should create an instance of Derivation" do

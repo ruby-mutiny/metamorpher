@@ -1,7 +1,7 @@
-require "metamorpher/rewriting/variable"
+require "metamorpher/rewriter/variable"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     shared_examples "a variable builder" do
       describe "variable!" do
         it "should create an instance of Variable" do

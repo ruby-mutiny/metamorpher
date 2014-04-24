@@ -1,8 +1,8 @@
-require "metamorpher/rewriting/term"
-require "metamorpher/matching/match"
+require "metamorpher/rewriter/term"
+require "metamorpher/matcher/match"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     class Variable < Term
       DEFAULT_CONDITION = ->(_) { true }
       attributes greedy?: false, condition: DEFAULT_CONDITION
@@ -20,9 +20,9 @@ module Metamorpher
       def match(other)
         captured = capture(other)
         if condition.call(captured)
-          Matching::Match.new(root: captured, substitution: { name => captured })
+          Matcher::Match.new(root: captured, substitution: { name => captured })
         else
-          Matching::NoMatch.new
+          Matcher::NoMatch.new
         end
       end
 

@@ -1,9 +1,9 @@
-require "metamorpher/rewriting/term"
-require "metamorpher/matching/match"
-require "metamorpher/matching/no_match"
+require "metamorpher/rewriter/term"
+require "metamorpher/matcher/match"
+require "metamorpher/matcher/no_match"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     class Literal < Term
       attributes children: []
 
@@ -29,9 +29,9 @@ module Metamorpher
           children
             .zip(other.children)
             .map { |child, other_child| child.match(other_child) }
-            .reduce(Matching::Match.new(root: other), :combine)
+            .reduce(Matcher::Match.new(root: other), :combine)
         else
-          Matching::NoMatch.new
+          Matcher::NoMatch.new
         end
       end
 

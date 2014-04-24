@@ -1,12 +1,12 @@
-require "metamorpher/rewriting/rule"
-require "metamorpher/rewriting/literal"
-require "metamorpher/rewriting/variable"
-require "metamorpher/rewriting/derived"
+require "metamorpher/rewriter/rule"
+require "metamorpher/rewriter/literal"
+require "metamorpher/rewriter/variable"
+require "metamorpher/rewriter/derived"
 
 require "parser/current"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     describe Literal do
       describe "simple" do
         it "Literals should match asts" do

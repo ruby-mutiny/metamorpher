@@ -1,7 +1,7 @@
 require "metamorpher/refactorer/merger"
 require "metamorpher/refactorer/replacement"
 require "metamorpher/builder"
-require "metamorpher/rewriting/rule"
+require "metamorpher/rewriter/rule"
 require "metamorpher/drivers/ruby"
 
 module Metamorpher
@@ -33,7 +33,7 @@ module Metamorpher
     end
 
     def rule
-      @rule ||= Rewriting::Rule.new(pattern: pattern, replacement: replacement)
+      @rule ||= Rewriter::Rule.new(pattern: pattern, replacement: replacement)
     end
   end
 end

@@ -1,7 +1,7 @@
-require "metamorpher/rewriting/literal"
+require "metamorpher/rewriter/literal"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     describe Literal do
       describe "children younger than or equal to" do
         let(:eldest)   { Term.new(name: :eldest) }

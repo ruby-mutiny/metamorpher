@@ -1,7 +1,7 @@
 require "attributable"
 
 module Metamorpher
-  module Matching
+  module Matcher
     class Match
       extend Attributable
       attributes :root, substitution: {}

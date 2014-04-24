@@ -1,7 +1,7 @@
-require "metamorpher/rewriting/variable"
+require "metamorpher/rewriter/variable"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     shared_examples "a greedy variable builder" do
       describe "greedy_variable!" do
         it "should create an instance of Variable with greedy? set to true" do

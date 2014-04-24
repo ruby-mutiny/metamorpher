@@ -1,7 +1,7 @@
-require "metamorpher/rewriting/term"
+require "metamorpher/rewriter/term"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     class Derived < Term
       attributes :base, :derivation
 

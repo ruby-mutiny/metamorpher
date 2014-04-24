@@ -1,5 +1,5 @@
 module Metamorpher
-  module Rewriting
+  module Rewriter
     class Traverser
       def traverse(tree)
         Enumerator.new(count(tree)) do |yielder|

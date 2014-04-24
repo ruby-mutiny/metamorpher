@@ -1,7 +1,7 @@
-require "metamorpher/rewriting/traverser"
+require "metamorpher/rewriter/traverser"
 
 module Metamorpher
-  module Rewriting
+  module Rewriter
     describe Traverser do
       describe "traversing a flat tree" do
         let(:tree) { t(1, 2, 3, 4) }
