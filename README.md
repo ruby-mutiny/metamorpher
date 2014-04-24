@@ -4,114 +4,113 @@ A term rewriting library for transforming (Ruby) programs.
 
 ## Basic usage
 
-Here's a very simple example that rewrites expressions of the form `succ(0)` to expressions of the form `1`:
+Here's a very simple example that refactors Ruby code of the form `if some_predicate then true else false end` to `some_predicate`:
 
 ```ruby
 require "metamorpher"
 
-class SuccZeroRewriter
-  include Metamorpher::Rewriter
+class UnnecessaryConditionalRefactorer
+  include Metamorpher::Refactorer
   
   def pattern
-    builder.literal! :succ, 0
+    # Look for: if(CONDITION, true, false)
+    builder.if(builder._condition, :true, :false)
   end
   
   def replacement
-    builder.literal! 1
+    # Replace with: CONDITION
+    builder._condition
   end
 end
 
-expression = Metamorpher.builder.succ(0) # => succ(0)
-SuccZeroRewriter.new.reduce(expression) # => 1
+UnnecessaryConditionalRefactorer.new.refactor("result = if some_predicate then true else false end") # => "result = some_predicate"
 ```
 
-This example is simple, but demonstrates many of the key concepts in metamorpher. You might now want to read about:
+This simple example is short, but terse! To fully understand it, you might now want to read about:
 
-* [Rewriters](#rewriters) - how to transform expressions into other expressions.
-* [Matchers](#matchers) - how to determine whether an expression adheres to a pattern (i.e., matches a term).
 * [Building terms](#building-terms) - how to create the data structure (terms) used by Rewriters and Matchers.
-* [Practical examples](#practical-examples) - examples of using metamorpher to refactor Ruby programs
+* [Matchers](#matchers) - how to determine whether an expression adheres to a pattern (i.e., matches a term).
+* [Rewriters](#rewriters) - how to transform expressions into other expressions.
+* [Refactorers](#refactorers) - how to use rewriters to refactor (Ruby) programs.
 
-### Rewriters
+### Building terms
 
-Rewriters perform small, in-place changes to an expression. They can be used for program transformations, such as refactorings. For some simple program transformations, a regular expression can be used on the program source. For more complicated transformations, a term rewriting system (such as the one provided by `Metamorpher::Rewriter`) is likely to be a better fit.
+The primary data structure used for [rewriting](#rewriters) and for [matching](#matchers) is a term. A term is a tree (i.e., an acyclic graph). The nodes of the tree are either a:
 
-Metamorpher provides the `Metamorpher::Rewriter` module for specifying rewriters. Include it, specify a `pattern` and a `replacement`, and then call `reduce(expression)`:
+* Literal - a node of the abstract-syntax tree of a program.
+* Variable - a named node, which is bound to a subterm (subtree) during [matching](#matchers).
+* Greedy variable - a variable that is bound to a set of subterms during [matching](#matchers).
+* Derivation - a placeholder node, which is replaced during [rewriting](#rewriters).
+
+To simplify the construction of terms, metamorpher provides the `Metamorpher::Builder` class:
 
 ```ruby
 require "metamorpher"
 
-class SuccZeroRewriter
-  include Metamorpher::Rewriter
-  
-  def pattern
-    builder.literal! :succ, 0
-  end
-  
-  def replacement
-    builder.literal! 1
-  end
+builder = Metamorpher::Builder.new
+
+builder.literal! :succ # => succ
+builder.literal! 4 # => 4
+
+builder.variable! :n # => N
+builder.greedy_variable! :n # => N+
+
+builder.derivation! :singular do |singular, builder|
+  builder.literal!(singular.name + "s")
 end
-
-expression = Metamorpher.builder.succ(0) # => succ(0)
-SuccZeroRewriter.new.reduce(expression) # => 1
-```
-
-Note that `reduce` has no effect when called on an expression that does not match `pattern`:
-
-```ruby
-expression = Metamorpher.builder.succ(1) # => succ(1)
-SuccZeroRewriter.new.reduce(expression) # => succ(1)
-```
-
-A call to `reduce` will return a literal that cannot be reduced any further by this rewriter:
-
-```ruby
-expression = Metamorpher.builder.add(
-  Metamorpher.builder.succ(0),
-  Metamorpher.builder.succ(0)
-)
- # => succ(0)
-
-SuccZeroRewriter.new.reduce(expression) # => add(1, 1)
-```
-
-A call to `apply` will instead return a literal after a single application of the rewriter:
-
-```ruby
-SuccZeroRewriter.new.apply(expression) # => add(1, succ(0))
-```
-
-#### Derivations
-
-Rewriting is more powerful when we are able to adjust the expression that is substituted for a captured variable. Metamorpher provides derivations for this purpose. (You may wish to read the section on [variables](#variables) before looking at the following example).
-
-For example, suppose that we wish to create a rewriter that pluralises any literal. The following rewriter achieves this, by using a derivation (see the implementation of `replacement`) to create a new literal after an expression has been matched. Crucially, the derivation uses data from the captured literal when building the replacement literal:
-
-```ruby
-class PluraliseRewriter
-  include Metamorpher::Rewriter
-  
-  def pattern
-    builder._singular
-  end
-  
-  def replacement
-    builder.derivation! :singular do |singular|
-      builder.literal!(singular.name + "s")
-    end
-  end
+ # [SINGULAR] -> ...
+ 
+builder.derivation! :key, :value do |key, value, builder|
+  builder.pair(key, value)
 end
-
-PluraliseRewriter.new.apply(Metamorpher.builder.literal! "dog") # => "dogs"
+ # [KEY, VALUE] -> ...
 ```
 
-Derivations can be based on more than one captured variable. In which case the call to `derivation!` and the block take more than one argument:
+Variables can be conditional, in which case they are specified by passing a block:
 
 ```ruby
-builder.derivation! :key, :value do |key, value|
-  builder.literal!(:pair, key, value)
-end
+builder.variable!(:method) { |literal| literal.name =~ /^find_by_/ } # => METHOD?
+builder.greedy_variable!(:pairs) { |literals| literals.size.even? } #=> PAIRS+?
+```
+
+#### Shorthands
+
+The builder provides a method missing shorthand for constructing literals, variables and greedy variables:
+
+```ruby
+builder.succ # => succ
+builder._n # => N 
+builder._n :greedy # => N+
+```
+
+Conditional variables can also be constructed using this shorthand:
+
+```ruby
+builder._method { |literal| literal.name =~ /^find_by_/ } #=> METHOD?
+builder._pairs(:greedy) { |literal| literal.name =~ /^find_by_/ } #=> PAIRS+?
+```
+
+#### Coercion of non-terms to literals
+
+When constructing a literal, the builder ensures that any children are converted to literals if they are not already a term:
+
+```ruby
+builder.literal!(:add, :x, :y) # => add(x, y)
+builder.add(:x, :y) # => add(x, y)
+```
+
+Without automatic coercion, the statements above would be written as follows. Note that they are more verbose:
+
+```ruby
+builder.literal!(:add, builder.literal!(:x), builder.literal!(:y)) # => add(x, y)
+builder.add(builder.x, builder.y) # => add(x, y)
+```
+
+Note that coercion isn't necessary (and isn't applied) when the children of a literal are already terms:
+
+```ruby
+builder.literal!(:add, builder.variable!(:n), builder.variable!(:m)) # => add(N, M)
+builder.add(builder._n, builder._m) # => add(N, M)
 ```
 
 ### Matchers
@@ -226,92 +225,138 @@ MultiAddMatcher.new.run(Metamorpher.builder.add(1,2,3))
  # => #<Metamorpher::Matching::Match root=add(1,2,3), substitution={:args=>[1, 2, 3]}> 
 ```
 
-### Building terms
+### Rewriters
 
-The primary data structure used for [rewriting](#rewriters) and for [matching](#matchers) is a term. A term is a tree (i.e., an acyclic graph). The nodes of the tree are either:
+Rewriters perform small, in-place changes to an expression. They can be used for program transformations, such as refactorings. For some simple program transformations, a regular expression can be used on the program source. For more complicated transformations, a term rewriting system (such as the one provided by `Metamorpher::Rewriter`) is likely to be a better fit.
 
-* Literal - a node of the abstract-syntax tree of a program.
-* Variable - a named node, which is bound to a subterm (subtree) during matching.
-* Greedy variable - a variable that is bound to a set of subterms during matching.
-* Derivation - a placeholder node, which is replaced during rewriting.
-
-To simplify the construction of terms, metamorpher provides the `Metamorpher::Builder` class:
+Metamorpher provides the `Metamorpher::Rewriter` module for specifying rewriters. Include it, specify a `pattern` and a `replacement`, and then call `reduce(expression)`:
 
 ```ruby
 require "metamorpher"
 
-builder = Metamorpher::Builder.new
-
-builder.literal! :succ # => succ
-builder.literal! 4 # => 4
-
-builder.variable! :n # => N
-builder.greedy_variable! :n # => N+
-
-builder.derivation! :singular do |singular, builder|
-  builder.literal!(singular.name + "s")
+class SuccZeroRewriter
+  include Metamorpher::Rewriter
+  
+  def pattern
+    builder.literal! :succ, 0
+  end
+  
+  def replacement
+    builder.literal! 1
+  end
 end
- # [SINGULAR] -> ...
- 
-builder.derivation! :key, :value do |key, value, builder|
-  builder.pair(key, value)
+
+expression = Metamorpher.builder.succ(0) # => succ(0)
+SuccZeroRewriter.new.reduce(expression) # => 1
+```
+
+Note that `reduce` has no effect when called on an expression that does not match `pattern`:
+
+```ruby
+expression = Metamorpher.builder.succ(1) # => succ(1)
+SuccZeroRewriter.new.reduce(expression) # => succ(1)
+```
+
+A call to `reduce` will return a literal that cannot be reduced any further by this rewriter:
+
+```ruby
+expression = Metamorpher.builder.add(
+  Metamorpher.builder.succ(0),
+  Metamorpher.builder.succ(0)
+)
+ # => succ(0)
+
+SuccZeroRewriter.new.reduce(expression) # => add(1, 1)
+```
+
+A call to `apply` will instead return a literal after a single application of the rewriter:
+
+```ruby
+SuccZeroRewriter.new.apply(expression) # => add(1, succ(0))
+```
+
+#### Derivations
+
+Rewriting is more powerful when we are able to adjust the expression that is substituted for a captured variable. Metamorpher provides derivations for this purpose. (You may wish to read the section on [variables](#variables) before looking at the following example).
+
+For example, suppose that we wish to create a rewriter that pluralises any literal. The following rewriter achieves this, by using a derivation (see the implementation of `replacement`) to create a new literal after an expression has been matched. Crucially, the derivation uses data from the captured literal when building the replacement literal:
+
+```ruby
+class PluraliseRewriter
+  include Metamorpher::Rewriter
+  
+  def pattern
+    builder._singular
+  end
+  
+  def replacement
+    builder.derivation! :singular do |singular|
+      builder.literal!(singular.name + "s")
+    end
+  end
 end
- # [KEY, VALUE] -> ...
+
+PluraliseRewriter.new.apply(Metamorpher.builder.literal! "dog") # => "dogs"
 ```
 
-Variables can be conditional, in which case they are specified by passing a block:
+Derivations can be based on more than one captured variable. In which case the call to `derivation!` and the block take more than one argument:
 
 ```ruby
-builder.variable!(:method) { |literal| literal.name =~ /^find_by_/ } # => METHOD?
-builder.greedy_variable!(:pairs) { |literals| literals.size.even? } #=> PAIRS+?
+builder.derivation! :key, :value do |key, value|
+  builder.literal!(:pair, key, value)
+end
 ```
 
-#### Shorthands
+### Refactorers 
 
-The builder provides a method missing shorthand for constructing literals, variables and greedy variables:
+Refactorers are [rewriters](#rewriters) that are specialised for rewriting program source code. A refactorer parses a program's source code, rewrites the source code, and returns the unparsed, rewritten source code. 
+
+Metamorpher provides the `Metamorpher::Refactorer` module for constructing classes that perform refactorings. Include it, specify a `pattern` and a `replacement`, and then call `refactor(src)`:
 
 ```ruby
-builder.succ # => succ
-builder._n # => N 
-builder._n :greedy # => N+
+require "metamorpher"
+
+class UnnecessaryConditionalRefactorer
+  include Metamorpher::Refactorer
+  
+  def pattern
+    builder.if(builder._condition, :true, :false)
+  end
+  
+  def replacement
+    builder._condition
+  end
+end
+
+UnnecessaryConditionalRefactorer.new.refactor("result = if some_predicate then true else false end") # => "result = some_predicate"
 ```
 
-Conditional variables can also be constructed using this shorthand:
+By default, `Metamorpher::Refactorer` assumes that you wish to refactor Ruby programs, and will attempt to `require` the [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems. If instead you wish to use a different Ruby parser / unparser or you wish to refactor a program written in a language other than Ruby, you should specify a different `driver`, as shown below. (A `Metamorpher::Driver` is responsible for transforming source code to a Metamorpher::Rewriter::Literal, and vice-versa).
 
 ```ruby
-builder._method { |literal| literal.name =~ /^find_by_/ } #=> METHOD?
-builder._pairs(:greedy) { |literal| literal.name =~ /^find_by_/ } #=> PAIRS+?
+class JavaRefactorer
+  include Metamorpher::Refactorer
+  
+  def driver
+    YourTool::MetamorpherDrivers::Java.new
+  end
+  
+  def pattern
+    ...
+  end
+  
+  def replacement
+    ...
+  end
+end
 ```
 
-#### Coercion of non-terms to literals
+#### Examples 
 
-When constructing a literal, the builder ensures that any children are converted to literals if they are not already a term:
+##### Refactor Rails where(...).first
 
-```ruby
-builder.literal!(:add, :x, :y) # => add(x, y)
-builder.add(:x, :y) # => add(x, y)
-```
+##### Refactor Rails dynamic find_by
 
-Without automatic coercion, the statements above would be written as follows. Note that they are more verbose:
-
-```ruby
-builder.literal!(:add, builder.literal!(:x), builder.literal!(:y)) # => add(x, y)
-builder.add(builder.x, builder.y) # => add(x, y)
-```
-
-Note that coercion isn't necessary (and isn't applied) when the children of a literal are already terms:
-
-```ruby
-builder.literal!(:add, builder.variable!(:n), builder.variable!(:m)) # => add(N, M)
-builder.add(builder._n, builder._m) # => add(N, M)
-```
-
-### Practical examples    
-
-#### Rewriting Ruby programs
-To use metamorpher to rewrite Ruby programs, I recommend the wonderful [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems.
-
-__TODO__ example of rewriting a Ruby program
 
 ## Installation
 
