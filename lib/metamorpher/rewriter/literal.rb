@@ -20,6 +20,18 @@ module Metamorpher
         end
       end
 
+      def leaf?
+        children.empty?
+      end
+
+      def branch?
+        !leaf?
+      end
+
+      def child_of?(parent_name)
+        parent.nil? ? false : parent.name == parent_name
+      end
+
       def children_younger_than_or_equal_to(child)
         children[(index(child))..-1]
       end

@@ -35,11 +35,30 @@ module Metamorpher
       end
 
       def export(literal)
-        if literal.children.empty?
-          literal.name
-        else
+        if literal.branch?
           Parser::AST::Node.new(literal.name, literal.children.map { |c| export(c) })
+
+        elsif keyword?(literal)
+          # Unparser requires leaf nodes containing keywords to be represented as nodes.
+          Parser::AST::Node.new(literal.name)
+
+        else
+          # Unparser requires all other leaf nodes to be represented as primitives.
+          literal.name
         end
+      end
+
+      def keyword?(literal)
+        literal.leaf? && !literal.child_of?(:sym) && keywords.include?(literal.name)
+      end
+
+      def keywords
+        # The symbols used by Parser for Ruby keywords. The current implementation
+        # is not a definitive list. If unparsing fails, it might be due to this list
+        # omitting a necessary keyword. Note that these are the symbols produced
+        # by Parser which are not necessarily the same as Ruby keywords (e.g.,
+        # Parser sometimes produces a :zsuper node for a program of the form "super")
+        @keywords ||= %i(nil false true self)
       end
 
       def ast_for(literal)
