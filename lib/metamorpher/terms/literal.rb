@@ -13,7 +13,7 @@ module Metamorpher
       end
 
       def inspect
-        if children.empty?
+        if leaf?
           "#{name}"
         else
           "#{name}(#{children.map(&:inspect).join(', ')})"
