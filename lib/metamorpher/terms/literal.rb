@@ -29,7 +29,7 @@ module Metamorpher
       end
 
       def child_of?(parent_name)
-        parent.nil? ? false : parent.name == parent_name
+        parent && parent.name == parent_name
       end
 
       def children_younger_than_or_equal_to(child)
