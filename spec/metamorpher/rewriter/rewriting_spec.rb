@@ -1,12 +1,12 @@
 require "metamorpher/rewriter/rule"
-require "metamorpher/rewriter/literal"
-require "metamorpher/rewriter/variable"
-require "metamorpher/rewriter/derived"
+require "metamorpher/terms/literal"
+require "metamorpher/terms/variable"
+require "metamorpher/terms/derived"
 
 require "parser/current"
 
 module Metamorpher
-  module Rewriter
+  module Terms
     describe Literal do
       describe "simple" do
         it "Literals should match asts" do
@@ -71,7 +71,7 @@ module Metamorpher
           y = Variable.new(name: :y)
           pattern = Literal.new(name: :send, children: [x, Literal.new(name: :^), y])
           replacement = Literal.new(name: :send, children: [x, Literal.new(name: :+), y])
-          rule = Rule.new(pattern: pattern, replacement: replacement)
+          rule = Rewriter::Rule.new(pattern: pattern, replacement: replacement)
 
           ast = parse("a ^ b")
           rewritten = rule.apply(ast)
@@ -84,7 +84,7 @@ module Metamorpher
           y = Variable.new(name: :y)
           pattern = Literal.new(name: :send, children: [x, Literal.new(name: :^), y])
           replacement = Literal.new(name: :send, children: [x, Literal.new(name: :+), y])
-          rule = Rule.new(pattern: pattern, replacement: replacement)
+          rule = Rewriter::Rule.new(pattern: pattern, replacement: replacement)
 
           ast = parse("def foo; a ^ b; end")
           rewritten = rule.apply(ast)
@@ -124,7 +124,7 @@ module Metamorpher
             ]
           )
 
-          rule = Rule.new(pattern: pattern, replacement: replacement)
+          rule = Rewriter::Rule.new(pattern: pattern, replacement: replacement)
           rewritten = rule.apply(ast)
 
           expect(rewritten).to eq(parse("User.find_by(username: username)"))
@@ -156,7 +156,7 @@ module Metamorpher
             ]
           )
 
-          rule = Rule.new(pattern: pattern, replacement: replacement)
+          rule = Rewriter::Rule.new(pattern: pattern, replacement: replacement)
           rewritten = rule.apply(ast)
 
           expect(rewritten).to eq(parse("Person.pets"))
@@ -220,7 +220,7 @@ module Metamorpher
             ]
           )
 
-          rule = Rule.new(pattern: pattern, replacement: replacement)
+          rule = Rewriter::Rule.new(pattern: pattern, replacement: replacement)
           rewritten = rule.apply(ast)
 
           expect(rewritten).to eq(parse("Asset.find_by(asset_id: id, object_path: path)"))

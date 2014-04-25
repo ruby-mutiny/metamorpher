@@ -1,10 +1,10 @@
-require "metamorpher/rewriter/literal"
+require "metamorpher/terms/literal"
 
 module Metamorpher
   module Builders
     class LiteralBuilder
       def literal!(name, *children)
-        Rewriter::Literal.new(name: name, children: children.map { |c| termify(c) })
+        Terms::Literal.new(name: name, children: children.map { |c| termify(c) })
       end
 
       def shorthand?(method, *arguments, &block)
@@ -22,7 +22,7 @@ module Metamorpher
       private
 
       def termify(item)
-        item.kind_of?(Rewriter::Term) ? item : literal!(item)
+        item.kind_of?(Terms::Term) ? item : literal!(item)
       end
     end
   end

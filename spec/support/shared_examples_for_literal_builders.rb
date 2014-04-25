@@ -1,8 +1,8 @@
-require "metamorpher/rewriter/literal"
-require "metamorpher/rewriter/variable"
+require "metamorpher/terms/literal"
+require "metamorpher/terms/variable"
 
 module Metamorpher
-  module Rewriter
+  module Terms
     shared_examples_for "a literal builder" do
       describe "literal!" do
         it "should create an instance of Literal" do

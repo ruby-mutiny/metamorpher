@@ -1,4 +1,4 @@
-require "metamorpher/rewriter/literal"
+require "metamorpher/terms/literal"
 require "parser/current"
 require "unparser"
 
@@ -28,9 +28,9 @@ module Metamorpher
 
       def create_literal_for(ast)
         if ast.respond_to? :type
-          Rewriter::Literal.new(name: ast.type, children: ast.children.map { |c| import(c) })
+          Terms::Literal.new(name: ast.type, children: ast.children.map { |c| import(c) })
         else
-          Rewriter::Literal.new(name: ast)
+          Terms::Literal.new(name: ast)
         end
       end
 

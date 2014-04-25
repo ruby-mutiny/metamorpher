@@ -1,8 +1,8 @@
-require "metamorpher/rewriter/term"
+require "metamorpher/terms/term"
 require "metamorpher/matcher/match"
 
 module Metamorpher
-  module Rewriter
+  module Terms
     class Variable < Term
       DEFAULT_CONDITION = ->(_) { true }
       attributes greedy?: false, condition: DEFAULT_CONDITION

@@ -1,13 +1,13 @@
-require "metamorpher/rewriter/variable"
+require "metamorpher/terms/variable"
 
 module Metamorpher
   module Builders
     class VariableBuilder
       def variable!(name, &block)
         if block
-          Rewriter::Variable.new(name: name, condition: block)
+          Terms::Variable.new(name: name, condition: block)
         else
-          Rewriter::Variable.new(name: name)
+          Terms::Variable.new(name: name)
         end
       end
 

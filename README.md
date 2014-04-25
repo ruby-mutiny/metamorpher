@@ -331,7 +331,7 @@ end
 UnnecessaryConditionalRefactorer.new.refactor("result = if some_predicate then true else false end") # => "result = some_predicate"
 ```
 
-By default, `Metamorpher::Refactorer` assumes that you wish to refactor Ruby programs, and will attempt to `require` the [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems. If instead you wish to use a different Ruby parser / unparser or you wish to refactor a program written in a language other than Ruby, you should specify a different `driver`, as shown below. (A `Metamorpher::Driver` is responsible for transforming source code to a Metamorpher::Rewriter::Literal, and vice-versa).
+By default, `Metamorpher::Refactorer` assumes that you wish to refactor Ruby programs, and will attempt to `require` the [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems. If instead you wish to use a different Ruby parser / unparser or you wish to refactor a program written in a language other than Ruby, you should specify a different `driver`, as shown below. (A `Metamorpher::Driver` is responsible for transforming source code to a Metamorpher::Terms::Literal, and vice-versa).
 
 ```ruby
 class JavaRefactorer

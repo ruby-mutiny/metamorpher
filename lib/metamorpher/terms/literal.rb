@@ -1,9 +1,9 @@
-require "metamorpher/rewriter/term"
+require "metamorpher/terms/term"
 require "metamorpher/matcher/match"
 require "metamorpher/matcher/no_match"
 
 module Metamorpher
-  module Rewriter
+  module Terms
     class Literal < Term
       attributes children: []
 

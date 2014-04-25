@@ -1,7 +1,7 @@
 require "attributable"
 
 module Metamorpher
-  module Rewriter
+  module Terms
     class Term
       extend Attributable
       attributes :name
