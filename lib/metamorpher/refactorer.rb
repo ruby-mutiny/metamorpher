@@ -12,6 +12,20 @@ module Metamorpher
       Merger.new(src).merge(*replacements, &block)
     end
 
+    def refactor_file(path, &block)
+      changes = []
+      refactored = refactor(File.read(path)) { |change| changes << change }
+      block.call(path, refactored, changes) if block
+      refactored
+    end
+
+    def refactor_files(paths, &block)
+      paths.reduce({}) do |result, path|
+        result[path] = refactor_file(path, &block)
+        result
+      end
+    end
+
     def builder
       @builder ||= Builder.new
     end
