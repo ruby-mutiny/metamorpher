@@ -1,10 +1,10 @@
 require "metamorpher/drivers/ruby"
-require "metamorpher/builder"
+require "metamorpher/builders/default/builder"
 
 module Metamorpher
   module Drivers
     describe Ruby do
-      let(:builder) { Metamorpher::Builder.new }
+      let(:builder) { Builders::Default::Builder.new }
 
       describe "for a simple program" do
         let(:source)  { "1 + 2" }

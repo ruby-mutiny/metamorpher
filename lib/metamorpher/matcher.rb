@@ -1,12 +1,10 @@
-require "metamorpher/builder"
+require "metamorpher/builders/default"
 
 module Metamorpher
   module Matcher
+    include Builders::Default
+
     extend Forwardable
     def_delegator :pattern, :match, :run
-
-    def builder
-      @builder ||= Builder.new
-    end
   end
 end

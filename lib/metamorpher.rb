@@ -1,11 +1,9 @@
 require "metamorpher/version"
-require "metamorpher/builder"
+require "metamorpher/builders/default"
 require "metamorpher/matcher"
 require "metamorpher/rewriter"
 require "metamorpher/refactorer"
 
 module Metamorpher
-  def self.builder
-    @builder ||= Metamorpher::Builder.new
-  end
+  extend Builders::Default
 end

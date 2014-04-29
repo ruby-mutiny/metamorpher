@@ -1,11 +1,13 @@
 require "metamorpher/refactorer/merger"
 require "metamorpher/refactorer/site"
-require "metamorpher/builder"
+require "metamorpher/builders/default"
 require "metamorpher/rewriter/rule"
 require "metamorpher/drivers/ruby"
 
 module Metamorpher
   module Refactorer
+    include Builders::Default
+
     def refactor(src, &block)
       literal = driver.parse(src)
       replacements = reduce_to_replacements(src, literal)
@@ -23,10 +25,6 @@ module Metamorpher
         block.call(path, result[path], changes) if block
         result
       end
-    end
-
-    def builder
-      @builder ||= Builder.new
     end
 
     def driver
