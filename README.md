@@ -339,8 +339,67 @@ class UnnecessaryConditionalRefactorer
   end
 end
 
-UnnecessaryConditionalRefactorer.new.refactor("result = if some_predicate then true else false end") # => "result = some_predicate"
+UnnecessaryConditionalRefactorer.new.refactor("a = if some_predicate then true else false end") # => "a = some_predicate"
 ```
+
+The `refactor` method can optionally take a block, which is called immediately before the matching code is replaced with the refactored code:
+
+```ruby
+source = "a = if some_predicate then true else false end;" \
+  "b = if some_other_predicate then true else false end;"
+
+UnnecessaryConditionalRefactorer.new.refactor(source) do |refactoring|
+  puts "About to replace '#{refactoring.original_code}' " \
+       "at position #{refactoring.original_position} " \
+       "with '#{refactoring.refactored_code}'"
+end
+ # About to replace 'if some_predicate then true else false end' at position 4..45 with 'some_predicate'
+ # About to replace 'if some_other_predicate then true else false end' at position 51..98 with 'some_other_predicate'
+ #  => "a = some_predicate;b = some_other_predicate;"
+```
+
+The `Metamorpher::Refactorer` module also defines a `refactor_file(path)` method, which can be used to apply refactoring to a file stored on disk:
+
+```ruby
+path = File.expand_path("refactorable.rb", "/Users/louis/code/mutiny")
+ # => "/Users/louis/code/mutiny/refactorable.rb" 
+
+UnnecessaryConditionalRefactorer.new.refactor_file(path)
+ # => ... (refactored code)
+ 
+UnnecessaryConditionalRefactorer.new.refactor_file(path) do |refactoring|
+  # works just like the block passed to refactor
+end
+ # => ... (refactored code)
+```
+
+You might prefer the `refactor_files(paths)` method, if you'd like to refactor several files at once:
+
+```ruby
+paths = Dir.glob(File.expand_path(File.join("**", "*.rb"), "/Users/louis/code/mutiny"))
+ # => ["/Users/louis/code/mutiny/lib/mutiny.rb", ...] 
+
+ # Note that refactor_files returns a Hash rather than a String
+UnnecessaryConditionalRefactorer.new.refactor_files(paths)
+ # => { "/Users/louis/code/mutiny/lib/mutiny.rb" => (refactored code), ... }
+
+ # Note that refactor_files yields for each file: its path, its new contents, and its refactoring sites
+UnnecessaryConditionalRefactorer.new.refactor_files(path) do |path, new_contents, sites|
+  puts "In #{path}:"
+
+  sites.each do |site|
+    puts "\tAbout to replace '#{refactoring.original_code}' " \
+         "at position #{refactoring.original_position} " \
+         "with '#{refactoring.refactored_code}'"
+  end
+end
+ # In /Users/louis/code/mutiny/lib/mutiny.rb:
+ #     About to replace 'if some_predicate then true else false end' at position 4..45 with 'some_predicate'
+ # ...
+ # => { "/Users/louis/code/mutiny/lib/mutiny.rb" => (refactored code), ... }
+```
+
+#### Refactoring programs written in other languages
 
 By default, `Metamorpher::Refactorer` assumes that you wish to refactor Ruby programs, and will attempt to `require` the [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems. If instead you wish to use a different Ruby parser / unparser or you wish to refactor a program written in a language other than Ruby, you should specify a different `driver`, as shown below. (A `Metamorpher::Driver` is responsible for transforming source code to a Metamorpher::Terms::Literal, and vice-versa).
 
