@@ -21,7 +21,7 @@ describe Metamorpher.builder do
     end
   end
 
-  describe "when building literals containing uppercase constants" do
+  describe "when building programs containing constants" do
     it "should convert uppercase constants to variables" do
       expect(subject.build("LEFT + RIGHT")).to eq(
         default_builder.literal!(
@@ -29,6 +29,17 @@ describe Metamorpher.builder do
           default_builder._left,
           :+,
           default_builder._right
+        )
+      )
+    end
+
+    it "should not convert non-uppercase constants to variables" do
+      expect(subject.build("Left + RIGHt")).to eq(
+        default_builder.literal!(
+          :send,
+          default_builder.const(nil, :Left),
+          :+,
+          default_builder.const(nil, :RIGHt)
         )
       )
     end
