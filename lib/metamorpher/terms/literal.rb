@@ -27,6 +27,14 @@ module Metamorpher
       def branch?
         !leaf?
       end
+      
+      def path
+        if parent
+          parent.path << parent.children.index { |c| c.equal?(self) }
+        else
+          []
+        end
+      end
 
       def child_of?(parent_name)
         parent && parent.name == parent_name
