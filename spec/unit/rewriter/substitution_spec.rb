@@ -40,15 +40,15 @@ module Metamorpher
 
     describe Literal do
       describe "with no children" do
-        let(:literal) { Literal.new(name: :root) }
+        subject { Literal.new(name: :root) }
 
         it "should return the original literal" do
-          expect(literal.substitute({})).to eq(literal)
+          expect(subject.substitute({})).to eq(subject)
         end
       end
 
       describe "with children" do
-        let(:literal) do
+        subject do
           Literal.new(
             name: :root,
             children: [
@@ -63,7 +63,7 @@ module Metamorpher
         it "should return the original literal with substituted descendants" do
           substitution = { foo: Literal.new(name: :bar) }
 
-          expect(literal.substitute(substitution)).to eq(
+          expect(subject.substitute(substitution)).to eq(
             Literal.new(
               name: :root,
               children: [
@@ -79,7 +79,7 @@ module Metamorpher
         it "should contain all elements if the substituted value is an array" do
           substitution = { foo: [Literal.new(name: :bar), Literal.new(name: :baz)] }
 
-          expect(literal.substitute(substitution)).to eq(
+          expect(subject.substitute(substitution)).to eq(
             Literal.new(
               name: :root,
               children: [
