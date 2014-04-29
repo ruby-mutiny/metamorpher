@@ -1,4 +1,4 @@
-require "metamorpher/builder"
+require "metamorpher"
 
 module Metamorpher
   describe Builder do

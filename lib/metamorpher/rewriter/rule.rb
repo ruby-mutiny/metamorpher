@@ -7,8 +7,8 @@ module Metamorpher
       extend Attributable
       attributes :pattern, :replacement, traverser: Traverser.new
 
-      def apply(ast)
-        rewrite_all(ast, matches_for(ast).take(1))
+      def apply(ast, &block)
+        rewrite_all(ast, matches_for(ast).take(1), &block)
       end
 
       def reduce(ast, &block)
