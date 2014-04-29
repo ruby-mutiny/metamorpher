@@ -4,6 +4,7 @@ AllCops:
     - Rakefile
   Excludes:
     - vendor/*
+    - examples/refactorings/rails/where_first/sample_controller.rb
 
 StringLiterals:
   EnforcedStyle: double_quotes
