@@ -275,6 +275,17 @@ A call to `apply` will instead return a literal after a single application of th
 SuccZeroRewriter.new.apply(expression) # => add(1, succ(0))
 ```
 
+Both `reduce` and `apply` can optionally take a block, which is called immediately before the matching term is replaced with the rewritten term:
+
+```ruby
+SuccZeroRewriter.new.reduce(expression) do |matching, rewritten|
+  puts "About to replace #{matching.inspect} at position #{matching.path} with #{rewritten.inspect}"
+end
+ # About to replace 'succ(0)' at position [0] with '1'
+ # About to replace 'succ(0)' at position [1] with '1'
+ # => 
+```
+
 #### Derivations
 
 Rewriting is more powerful when we are able to adjust the expression that is substituted for a captured variable. Metamorpher provides derivations for this purpose. (You may wish to read the section on [variables](#variables) before looking at the following example).
