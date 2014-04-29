@@ -19,12 +19,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "attributable", "~> 0.1.0"
+  spec.add_runtime_dependency "parser", "~> 2.1.4"
+  spec.add_runtime_dependency "unparser", "~> 0.1.9"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10.1.1"
   spec.add_development_dependency "rspec", "~> 2.14.1"
   spec.add_development_dependency "coveralls", "~> 0.7.0"
   spec.add_development_dependency "rubocop", "~> 0.19.1"
-  spec.add_development_dependency "parser", "~> 2.1.4"
-  spec.add_development_dependency "unparser", "~> 0.1.9"
 end
