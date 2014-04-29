@@ -18,10 +18,22 @@ module Metamorpher
           expect(subject.unparse(literal)).to eq(source)
         end
 
-        it "should be able to provide source location of literals" do
+        it "should provide source location of literals" do
           subject.parse(source)
 
           expect(subject.source_location_for(literal)).to eq(0..4)
+          expect(subject.source_location_for(literal.children.first)).to eq(0..0)
+          expect(subject.source_location_for(literal.children.last)).to eq(4..4)
+        end
+      end
+
+      describe "for program containing identical statements" do
+        let(:source)  { "1 + 1" }
+        let(:literal) { builder.literal!(:send, builder.int(1), :+, builder.int(1)) }
+
+        it "should provide different source locations for syntactically equal literals" do
+          subject.parse(source)
+
           expect(subject.source_location_for(literal.children.first)).to eq(0..0)
           expect(subject.source_location_for(literal.children.last)).to eq(4..4)
         end

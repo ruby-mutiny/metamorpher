@@ -6,7 +6,7 @@ module Metamorpher
   module Drivers
     class Ruby
       def parse(src)
-        import(parser.parse(src))
+        import(@root = parser.parse(src))
       end
 
       def unparse(literal)
@@ -21,9 +21,7 @@ module Metamorpher
       private
 
       def import(ast)
-        create_literal_for(ast).tap do |literal|
-          asts[literal] = ast
-        end
+        create_literal_for(ast)
       end
 
       def create_literal_for(ast)
@@ -62,7 +60,7 @@ module Metamorpher
       end
 
       def ast_for(literal)
-        asts[literal]
+        literal.path.reduce(@root) { |a, e| a.children[e] }
       end
 
       def parser
@@ -71,10 +69,6 @@ module Metamorpher
 
       def unparser
         @unparser ||= Unparser
-      end
-
-      def asts
-        @asts ||= {}
       end
     end
   end
