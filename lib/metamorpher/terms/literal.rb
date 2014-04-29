@@ -27,7 +27,7 @@ module Metamorpher
       def branch?
         !leaf?
       end
-      
+
       def path
         if parent
           parent.path << parent.children.index { |c| c.equal?(self) }
@@ -42,35 +42,6 @@ module Metamorpher
 
       def children_younger_than_or_equal_to(child)
         children[(index(child))..-1]
-      end
-
-      def match(other)
-        if other && other.name == name
-          children
-            .zip(other.children)
-            .map { |child, other_child| child.match(other_child) }
-            .reduce(Matcher::Match.new(root: other), :combine)
-        else
-          Matcher::NoMatch.new
-        end
-      end
-
-      def substitute(substitution)
-        Literal.new(
-          name: name,
-          children: children.map { |child| child.substitute(substitution) }
-        )
-      end
-
-      def replace(replacee, replacement)
-        if self == replacee
-          replacement
-        else
-          Literal.new(
-            name: name,
-            children: children.map { |child| child.replace(replacee, replacement) }
-          )
-        end
       end
 
       private
