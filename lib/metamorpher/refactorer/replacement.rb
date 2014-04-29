@@ -20,6 +20,10 @@ module Metamorpher
       def offset
         value.size - position.size
       end
+
+      def <=>(other)
+        position.begin <=> other.position.begin
+      end
     end
   end
 end

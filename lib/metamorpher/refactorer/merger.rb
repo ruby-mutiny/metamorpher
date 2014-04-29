@@ -5,7 +5,7 @@ module Metamorpher
     Merger = Struct.new(:original) do
       def merge(*replacements, &block)
         original.dup.tap do |merged|
-          replacements.reduce(0) do |offset, replacement|
+          replacements.sort.reduce(0) do |offset, replacement|
             yield replacement if block
             replacement = replacement.slide(offset)
             replacement.merge_into(merged)
