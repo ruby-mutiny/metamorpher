@@ -27,7 +27,11 @@ module Metamorpher
       end
 
       def visit_term(term)
-        fail ReplacementError, "Can only perform replacement on literals."
+        if term == replacee
+          replacement
+        else
+          term
+        end
       end
     end
 
