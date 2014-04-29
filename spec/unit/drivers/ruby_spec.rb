@@ -39,6 +39,26 @@ module Metamorpher
         end
       end
 
+      describe "for program that parses to an AST containing nils" do
+        let(:source)  { "LEFT + RIGHT" }
+        let(:literal) do
+          builder.literal!(
+           :send,
+           builder.const(nil, :LEFT),
+           :+,
+           builder.const(nil, :RIGHT)
+          )
+        end
+
+        it "should parse a simple program to literals" do
+          expect(subject.parse(source)).to eq(literal)
+        end
+
+        it "should unparse valid literals to source" do
+          expect(subject.unparse(literal)).to eq(source)
+        end
+      end
+
       %w(nil true false self).each do |keyword|
         describe "for a program containing the '#{keyword}' keyword" do
           let(:source)  { "a = #{keyword}" }

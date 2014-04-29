@@ -116,6 +116,13 @@ module Metamorpher
 
             expect(literal.match(matchee)).not_to have_matched
           end
+
+          it "should be able to match nils" do
+            literal = Literal.new(name: nil)
+            matchee = Literal.new(name: nil)
+
+            expect(literal.match(matchee)).to have_matched(matchee)
+          end
         end
 
         describe "with children" do
