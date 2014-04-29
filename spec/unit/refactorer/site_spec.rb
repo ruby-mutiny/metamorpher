@@ -1,21 +1,22 @@
-require "metamorpher/refactorer/replacement"
+require "metamorpher/refactorer/site"
 
 module Metamorpher
   module Refactorer
-    describe Replacement do
-      subject { Replacement.new(4..6, "bar") }
+    describe Site do
+      subject { Site.new(4..6, "foo", "bar") }
 
       describe "slide" do
         it "should return a replacement with the new position" do
-          expect(subject.slide(2).position).to eq(6..8)
+          expect(subject.slide(2).original_position).to eq(6..8)
         end
 
-        it "should not alter the value" do
-          expect(subject.slide(2).value).to eq("bar")
+        it "should not alter the code" do
+          expect(subject.slide(2).original_code).to eq("foo")
+          expect(subject.slide(2).refactored_code).to eq("bar")
         end
 
         it "should be chainable" do
-          expect(subject.slide(2).slide(10).position).to eq(16..18)
+          expect(subject.slide(2).slide(10).original_position).to eq(16..18)
         end
       end
 
@@ -39,11 +40,11 @@ module Metamorpher
         end
 
         it "should be -ve when position's size is larger than value's size" do
-          expect(Replacement.new(4..6, "a").offset).to eq(-2)
+          expect(Site.new(4..6, "foo", "b").offset).to eq(-2)
         end
 
         it "should be +ve when position's size is smaller than value's size" do
-          expect(Replacement.new(4..6, "baaz").offset).to eq(1)
+          expect(Site.new(4..6, "foo", "baaz").offset).to eq(1)
         end
       end
     end

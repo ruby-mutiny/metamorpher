@@ -1,5 +1,5 @@
 require "metamorpher/refactorer/merger"
-require "metamorpher/refactorer/replacement"
+require "metamorpher/refactorer/site"
 
 module Metamorpher
   module Refactorer
@@ -9,31 +9,31 @@ module Metamorpher
 
       describe "for a single replacement" do
         it "should be able to rewrite at the start of the string" do
-          merged = merge(Replacement.new(0..2, "A"))
+          merged = merge(Site.new(0..2, "The", "A"))
 
           expect(merged).to eq("A quick brown fox jumps over the lazy dog.")
         end
 
         it "should be able to rewrite in the middle of the string" do
-          merged = merge(Replacement.new(4..8, "swift"))
+          merged = merge(Site.new(4..8, "quick", "swift"))
 
           expect(merged).to eq("The swift brown fox jumps over the lazy dog.")
         end
 
         it "should be able to rewrite at the end of the string" do
-          merged = merge(Replacement.new(43..43, "!"))
+          merged = merge(Site.new(43..43, ".", "!"))
 
           expect(merged).to eq("The quick brown fox jumps over the lazy dog!")
         end
 
         it "should not alter the original string" do
-          merge(Replacement.new(0..2, "A"))
+          merge(Site.new(0..2, "The", "A"))
 
           expect(original).to eq("The quick brown fox jumps over the lazy dog.")
         end
 
         it "should yield before performing the replacement" do
-          replacement = Replacement.new(0..2, "A")
+          replacement = Site.new(0..2, "The", "A")
 
           expect { |b| merge(replacement, &b) }.to yield_with_args(replacement)
         end
@@ -42,9 +42,9 @@ module Metamorpher
       describe "for multiple replacements" do
         it "should merge all replacements" do
           merged = merge(
-            Replacement.new(4..8, "swift"),
-            Replacement.new(20..24, "walks"),
-            Replacement.new(40..42, "cat")
+            Site.new(4..8, "quick", "swift"),
+            Site.new(20..24, "jumps", "walks"),
+            Site.new(40..42, "dog", "cat")
           )
 
           expect(merged).to eq("The swift brown fox walks over the lazy cat.")
@@ -52,9 +52,9 @@ module Metamorpher
 
         it "should determine position of all replacements based on the original string" do
           merged = merge(
-            Replacement.new(4..8, "fast"),
-            Replacement.new(20..24, "springs"),
-            Replacement.new(40..42, "cat")
+            Site.new(4..8, "quick", "fast"),
+            Site.new(20..24, "jumps", "springs"),
+            Site.new(40..42, "dog", "cat")
           )
 
           # note that "fast" is 1 char shorter than its replacee "quick"
@@ -67,9 +67,9 @@ module Metamorpher
 
         it "should yield before performing each replacement" do
           replacements = [
-            Replacement.new(4..8, "swift"),
-            Replacement.new(20..24, "walks"),
-            Replacement.new(40..42, "cat")
+            Site.new(4..8, "quick", "fast"),
+            Site.new(20..24, "jumps", "springs"),
+            Site.new(40..42, "dog", "cat")
           ]
 
           expect { |b| merge(*replacements, &b) }.to yield_successive_args(*replacements)

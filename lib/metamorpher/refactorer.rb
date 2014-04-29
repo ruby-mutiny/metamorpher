@@ -1,5 +1,5 @@
 require "metamorpher/refactorer/merger"
-require "metamorpher/refactorer/replacement"
+require "metamorpher/refactorer/site"
 require "metamorpher/builder"
 require "metamorpher/rewriter/rule"
 require "metamorpher/drivers/ruby"
@@ -8,20 +8,19 @@ module Metamorpher
   module Refactorer
     def refactor(src, &block)
       literal = driver.parse(src)
-      replacements = reduce_to_replacements(literal)
+      replacements = reduce_to_replacements(src, literal)
       Merger.new(src).merge(*replacements, &block)
     end
 
     def refactor_file(path, &block)
-      changes = []
-      refactored = refactor(File.read(path)) { |change| changes << change }
-      block.call(path, refactored, changes) if block
-      refactored
+      refactor(File.read(path), &block)
     end
 
     def refactor_files(paths, &block)
       paths.reduce({}) do |result, path|
-        result[path] = refactor_file(path, &block)
+        changes = []
+        result[path] = refactor_file(path) { |change| changes << change }
+        block.call(path, result[path], changes) if block
         result
       end
     end
@@ -36,12 +35,13 @@ module Metamorpher
 
     private
 
-    def reduce_to_replacements(literal)
+    def reduce_to_replacements(src, literal)
       [].tap do |replacements|
         rule.reduce(literal) do |original, rewritten|
-          position = driver.source_location_for(original)
-          new_code = driver.unparse(rewritten)
-          replacements << Replacement.new(position, new_code)
+          original_position = driver.source_location_for(original)
+          original_code = src[original_position]
+          refactored_code = driver.unparse(rewritten)
+          replacements << Site.new(original_position, original_code, refactored_code)
         end
       end
     end
