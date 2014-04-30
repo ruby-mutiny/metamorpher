@@ -1,8 +1,8 @@
-require "metamorpher/builders/default/builder"
+require "metamorpher/builders/ast/builder"
 
 module Metamorpher
   module Builders
-    module Default
+    module AST
       def builder
         @builder ||= Builder.new
       end

@@ -1,9 +1,9 @@
 require "metamorpher/terms/derived"
-require "metamorpher/builders/default/builder"
+require "metamorpher/builders/ast/builder"
 
 module Metamorpher
   module Builders
-    module Default
+    module AST
       class DerivationBuilder
         def derivation!(*base, &block)
           fail ArgumentError, "wrong number of arguments (0)" if base.empty?

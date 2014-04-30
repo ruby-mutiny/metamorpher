@@ -1,9 +1,9 @@
-require "metamorpher/builders/default"
+require "metamorpher/builders/ast"
 require "metamorpher/rewriter/rule"
 
 module Metamorpher
   module Rewriter
-    include Builders::Default
+    include Builders::AST
 
     extend Forwardable
     def_delegators :rule, :apply, :reduce

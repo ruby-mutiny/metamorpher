@@ -2,7 +2,7 @@ require "metamorpher/terms/literal"
 
 module Metamorpher
   module Builders
-    module Default
+    module AST
       class LiteralBuilder
         def literal!(name, *children)
           Terms::Literal.new(name: name, children: children.map { |c| termify(c) })

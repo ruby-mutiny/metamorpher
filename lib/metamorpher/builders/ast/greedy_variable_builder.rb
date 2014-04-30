@@ -2,7 +2,7 @@ require "metamorpher/terms/variable"
 
 module Metamorpher
   module Builders
-    module Default
+    module AST
       class GreedyVariableBuilder
         def greedy_variable!(name, &block)
           if block

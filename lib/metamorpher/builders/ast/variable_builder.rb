@@ -2,7 +2,7 @@ require "metamorpher/terms/variable"
 
 module Metamorpher
   module Builders
-    module Default
+    module AST
       class VariableBuilder
         def variable!(name, &block)
           if block

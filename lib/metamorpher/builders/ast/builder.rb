@@ -1,11 +1,11 @@
-require "metamorpher/builders/default/literal_builder"
-require "metamorpher/builders/default/variable_builder"
-require "metamorpher/builders/default/greedy_variable_builder"
-require "metamorpher/builders/default/derivation_builder"
+require "metamorpher/builders/ast/literal_builder"
+require "metamorpher/builders/ast/variable_builder"
+require "metamorpher/builders/ast/greedy_variable_builder"
+require "metamorpher/builders/ast/derivation_builder"
 
 module Metamorpher
   module Builders
-    module Default
+    module AST
       class Builder
         extend Forwardable
         def_delegator :literal_builder, :literal!

@@ -1,8 +1,8 @@
-require "metamorpher/builders/default"
+require "metamorpher/builders/ast"
 
 module Metamorpher
   module Matcher
-    include Builders::Default
+    include Builders::AST
 
     extend Forwardable
     def_delegator :pattern, :match, :run

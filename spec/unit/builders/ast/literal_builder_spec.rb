@@ -1,6 +1,6 @@
-require "metamorpher/builders/default/literal_builder"
+require "metamorpher/builders/ast/literal_builder"
 
-describe Metamorpher::Builders::Default::LiteralBuilder do
+describe Metamorpher::Builders::AST::LiteralBuilder do
   it_behaves_like "a literal builder"
 
   it "should raise when variable shorthand is used" do

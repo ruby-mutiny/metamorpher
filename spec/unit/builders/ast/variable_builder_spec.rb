@@ -1,6 +1,6 @@
-require "metamorpher/builders/default/variable_builder"
+require "metamorpher/builders/ast/variable_builder"
 
-describe Metamorpher::Builders::Default::VariableBuilder do
+describe Metamorpher::Builders::AST::VariableBuilder do
   it_behaves_like "a variable builder"
 
   it "should raise when incorrect shorthand is used" do
