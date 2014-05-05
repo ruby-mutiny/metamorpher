@@ -11,6 +11,7 @@ require "metamorpher"
 
 class UnnecessaryConditionalRefactorer
   include Metamorpher::Refactorer
+  include Metamorpher::Builders::AST
   
   def pattern
     # Look for: if(CONDITION, true, false)
@@ -135,6 +136,7 @@ require "metamorpher"
 
 class SuccZeroMatcher
   include Metamorpher::Matcher
+  include Metamorpher::Builders::AST
   
   def pattern
     builder.succ(0)
@@ -161,6 +163,7 @@ For example, suppose we wish to match expressions of the form `succ(X)` where X 
 ```ruby
 class SuccMatcher
   include Metamorpher::Matcher
+  include Metamorpher::Builders::AST
   
   def pattern
     builder.succ(builder.X)
@@ -193,6 +196,7 @@ For example, suppose that we wish to create a matcher that only matches method c
 ```ruby
 class DynamicFinderMatcher
   include Metamorpher::Matcher
+  include Metamorpher::Builders::AST
   
   def pattern
     builder.literal!(
@@ -221,6 +225,7 @@ For example, suppose that we wish to create a matcher that works for an expressi
 ```ruby
 class MultiAddMatcher
   include Metamorpher::Matcher
+  include Metamorpher::Builders::AST
   
   def pattern
     builder.add(
@@ -247,6 +252,7 @@ require "metamorpher"
 
 class SuccZeroRewriter
   include Metamorpher::Rewriter
+  include Metamorpher::Builders::AST
   
   def pattern
     builder.literal! :succ, 0
@@ -306,6 +312,7 @@ For example, suppose that we wish to create a rewriter that pluralises any liter
 ```ruby
 class PluraliseRewriter
   include Metamorpher::Rewriter
+  include Metamorpher::Builders::AST
   
   def pattern
     builder.SINGULAR
