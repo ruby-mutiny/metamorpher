@@ -92,7 +92,7 @@ describe "Rewriting" do
         include Metamorpher::Rewriter
 
         def pattern
-          builder._singular
+          builder.SINGULAR
         end
 
         def replacement
@@ -117,7 +117,7 @@ describe "Rewriting" do
         include Metamorpher::Rewriter
 
         def pattern
-          builder.literal!(:"=>", builder._key, builder._value)
+          builder.literal!(:"=>", builder.KEY, builder.VALUE)
         end
 
         def replacement

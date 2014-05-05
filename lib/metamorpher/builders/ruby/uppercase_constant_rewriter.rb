@@ -7,7 +7,7 @@ module Metamorpher
         def pattern
           builder.const(
             builder.literal!(nil),
-            builder._variable_to_be { |v| !v.name[/\p{Lower}/] }
+            builder.VARIABLE_TO_BE { |v| !v.name[/\p{Lower}/] }
           )
         end
 

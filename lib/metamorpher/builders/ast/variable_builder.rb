@@ -13,12 +13,12 @@ module Metamorpher
         end
 
         def shorthand?(method, *arguments, &block)
-          method.to_s.start_with?("_") && arguments.first != :greedy
+          !method[/\p{Lower}/] && !method.to_s.end_with?("_")
         end
 
         def method_missing(method, *arguments, &block)
           if shorthand?(method, *arguments, &block)
-            variable!(method[1..-1].to_sym, *arguments, &block)
+            variable!(method.downcase.to_sym, *arguments, &block)
           else
             super.method_missing(method, *arguments, &block)
           end

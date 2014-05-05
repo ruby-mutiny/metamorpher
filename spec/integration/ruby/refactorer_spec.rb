@@ -8,11 +8,11 @@ describe "Refactorer" do
       include Metamorpher::Refactorer
 
       def pattern
-        builder.if(builder._condition, :true, :false)
+        builder.if(builder.CONDITION, :true, :false)
       end
 
       def replacement
-        builder._condition
+        builder.CONDITION
       end
     end
 

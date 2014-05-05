@@ -26,14 +26,14 @@ module Metamorpher
 
       describe "variable shorthand" do
         it "should create an instance of Variable" do
-          actual = subject._a
+          actual = subject.A
           expected = Variable.new(name: :a)
 
           expect(actual).to eq(expected)
         end
 
         it "should create condition from block" do
-          built = subject._a { |term| term > 0 }
+          built = subject.A { |term| term > 0 }
 
           expect(built.name).to eq(:a)
           expect(built.condition.call(1)).to be_true
@@ -41,7 +41,7 @@ module Metamorpher
         end
 
         it "should not allow children" do
-          expect { subject._a(1) }.to raise_error(ArgumentError)
+          expect { subject.A(1) }.to raise_error(ArgumentError)
         end
       end
     end

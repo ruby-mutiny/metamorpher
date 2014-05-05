@@ -9,7 +9,7 @@ module Metamorpher
         end
 
         def shorthand?(method, *arguments, &block)
-          method =~ /^[a-z]/
+          !method[/\p{Upper}/]
         end
 
         def method_missing(method, *arguments, &block)

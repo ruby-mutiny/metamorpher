@@ -14,12 +14,12 @@ class UnnecessaryConditionalRefactorer
   
   def pattern
     # Look for: if(CONDITION, true, false)
-    builder.if(builder._condition, :true, :false)
+    builder.if(builder.CONDITION, :true, :false)
   end
   
   def replacement
     # Replace with: CONDITION
-    builder._condition
+    builder.CONDITION
   end
 end
 
@@ -79,15 +79,15 @@ The builder provides a method missing shorthand for constructing literals, varia
 
 ```ruby
 builder.succ # => succ
-builder._n # => N 
-builder._n :greedy # => N+
+builder.N # => N 
+builder.N_ # => N+
 ```
 
 Conditional variables can also be constructed using this shorthand:
 
 ```ruby
-builder._method { |literal| literal.name =~ /^find_by_/ } #=> METHOD?
-builder._pairs(:greedy) { |literal| literal.name =~ /^find_by_/ } #=> PAIRS+?
+builder.METHOD { |literal| literal.name =~ /^find_by_/ } #=> METHOD?
+builder.PAIRS_ { |literal| literal.name =~ /^find_by_/ } #=> PAIRS+?
 ```
 
 #### Coercion of non-terms to literals
@@ -110,7 +110,7 @@ Note that coercion isn't necessary (and isn't applied) when the children of a li
 
 ```ruby
 builder.literal!(:add, builder.variable!(:n), builder.variable!(:m)) # => add(N, M)
-builder.add(builder._n, builder._m) # => add(N, M)
+builder.add(builder.N, builder.M) # => add(N, M)
 ```
 
 ### Matchers
@@ -152,7 +152,7 @@ class SuccMatcher
   include Metamorpher::Matcher
   
   def pattern
-    builder.succ(builder._x)
+    builder.succ(builder.X)
   end
 end
 
@@ -187,7 +187,7 @@ class DynamicFinderMatcher
     builder.literal!(
       :".",
       :User,
-      builder._method { |literal| literal.name =~ /^find_by_/ }
+      builder.METHOD { |literal| literal.name =~ /^find_by_/ }
     )
   end
 end
@@ -213,7 +213,7 @@ class MultiAddMatcher
   
   def pattern
     builder.add(
-      builder._args(:greedy)
+      builder.ARGS_
     )
   end
 end
@@ -297,7 +297,7 @@ class PluraliseRewriter
   include Metamorpher::Rewriter
   
   def pattern
-    builder._singular
+    builder.SINGULAR
   end
   
   def replacement
@@ -331,11 +331,11 @@ class UnnecessaryConditionalRefactorer
   include Metamorpher::Refactorer
   
   def pattern
-    builder.if(builder._condition, :true, :false)
+    builder.if(builder.CONDITION, :true, :false)
   end
   
   def replacement
-    builder._condition
+    builder.CONDITION
   end
 end
 

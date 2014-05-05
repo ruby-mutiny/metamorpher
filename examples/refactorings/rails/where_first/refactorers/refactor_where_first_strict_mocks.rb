@@ -11,12 +11,12 @@ class RefactorWhereFirstStrictMocks
       :send,
       builder.literal!(
         :send,
-        builder.literal!(:send, builder._type, :expects, builder.sym(:where)),
+        builder.literal!(:send, builder.TYPE, :expects, builder.sym(:where)),
         :with,
-        builder._params(:greedy)
+        builder.PARAMS_
       ),
       :returns,
-      builder._expected_value
+      builder.EXPECTED_VALUE
     )
   end
   # rubocop:enable MethodLength
@@ -28,9 +28,9 @@ class RefactorWhereFirstStrictMocks
       :send,
       builder.literal!(
         :send,
-        builder.literal!(:send, builder._type, :expects, builder.sym(:find_by)),
+        builder.literal!(:send, builder.TYPE, :expects, builder.sym(:find_by)),
         :with,
-        builder._params
+        builder.PARAMS
       ),
       :returns,
       # Refactor the argument to "returns" from [] to nil or from [X] to X

@@ -68,6 +68,13 @@ module Metamorpher
           expect(actual).to eq(expected)
         end
 
+        it "should work for longer names" do
+          actual = subject.this_is_a_longer_name
+          expected = Literal.new(name: :this_is_a_longer_name)
+
+          expect(actual).to eq(expected)
+        end
+
         it "should capture children" do
           actual = subject.add(1, 2)
           expected = Literal.new(
@@ -79,10 +86,6 @@ module Metamorpher
           )
 
           expect(actual).to eq(expected)
-        end
-
-        it "should raise when incorrect shorthand is used" do
-          expect { subject.INC }.to raise_error(NoMethodError)
         end
       end
     end

@@ -32,7 +32,7 @@ describe "Matching" do
       include Metamorpher::Matcher
 
       def pattern
-        builder.succ(builder._x)
+        builder.succ(builder.X)
       end
     end
 
@@ -66,7 +66,7 @@ describe "Matching" do
         builder.literal!(
           :".",
           :User,
-          builder._method { |literal| literal.name =~ /^find_by_/ }
+          builder.METHOD { |literal| literal.name =~ /^find_by_/ }
         )
       end
     end
@@ -92,7 +92,7 @@ describe "Matching" do
 
       def pattern
         builder.add(
-          builder._args(:greedy)
+          builder.ARGS_
         )
       end
     end

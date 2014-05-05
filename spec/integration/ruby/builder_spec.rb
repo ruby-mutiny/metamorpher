@@ -26,9 +26,9 @@ describe Metamorpher.builder do
       expect(subject.build("LEFT + RIGHT")).to eq(
         ast_builder.literal!(
           :send,
-          ast_builder._left,
+          ast_builder.LEFT,
           :+,
-          ast_builder._right
+          ast_builder.RIGHT
         )
       )
     end
@@ -37,9 +37,9 @@ describe Metamorpher.builder do
       expect(subject.build("LEFT_ + RIGHT_")).to eq(
         ast_builder.literal!(
           :send,
-          ast_builder._left(:greedy),
+          ast_builder.LEFT_,
           :+,
-          ast_builder._right(:greedy)
+          ast_builder.RIGHT_
         )
       )
     end

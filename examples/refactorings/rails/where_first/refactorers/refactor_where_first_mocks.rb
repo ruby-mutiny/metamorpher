@@ -8,9 +8,9 @@ class RefactorWhereFirstMocks
     # "TYPE.expects(:where).returns(EXPECTED_VALUE)" as an AST:
     builder.literal!(
       :send,
-      builder.literal!(:send, builder._type, :expects, builder.sym(:where)),
+      builder.literal!(:send, builder.TYPE, :expects, builder.sym(:where)),
       :returns,
-      builder._expected_value
+      builder.EXPECTED_VALUE
     )
   end
 
@@ -19,7 +19,7 @@ class RefactorWhereFirstMocks
     # "TYPE.expects(:find_by).returns(EXPECTED_VALUE)" as an AST:
     builder.literal!(
       :send,
-      builder.literal!(:send, builder._type, :expects, builder.sym(:find_by)),
+      builder.literal!(:send, builder.TYPE, :expects, builder.sym(:find_by)),
       :returns,
       # Refactor the argument to "returns" from [] to nil or from [X] to X
       builder.derivation!(:expected_value) do |expected_value, builder|

@@ -6,19 +6,19 @@ module Metamorpher
       class GreedyVariableBuilder
         def greedy_variable!(name, &block)
           if block
-            Terms::Variable.new(name: name, condition: block, greedy?: true)
+            Terms::Variable.new(name: name, greedy?: true, condition: block)
           else
             Terms::Variable.new(name: name, greedy?: true)
           end
         end
 
         def shorthand?(method, *arguments, &block)
-          method.to_s.start_with?("_") && arguments.first == :greedy
+          !method[/\p{Lower}/] && method.to_s.end_with?("_")
         end
 
         def method_missing(method, *arguments, &block)
           if shorthand?(method, *arguments, &block)
-            greedy_variable!(method[1..-1].to_sym, *arguments[1..-1], &block)
+            greedy_variable!(method.to_s.chomp("_").downcase.to_sym, *arguments, &block)
           else
             super.method_missing(method, *arguments, &block)
           end

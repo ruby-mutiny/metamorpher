@@ -8,13 +8,13 @@ class RefactorWhereFirstToFindBy
     # "TYPE.where(PARAMS...).first" as an AST:
     builder.literal!(
       :send,
-      builder.literal!(:send, builder._type, :where, builder._params(:greedy)),
+      builder.literal!(:send, builder.TYPE, :where, builder.PARAMS_),
       :first
     )
   end
 
   def replacement
     # "TYPE.find_by(PARAMS...)" as an AST:
-    builder.literal!(:send, builder._type, :find_by, builder._params)
+    builder.literal!(:send, builder.TYPE, :find_by, builder.PARAMS_)
   end
 end

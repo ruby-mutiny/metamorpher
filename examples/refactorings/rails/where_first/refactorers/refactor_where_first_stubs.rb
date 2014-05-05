@@ -8,10 +8,10 @@ class RefactorWhereFirstStubs
     # "TYPE.stubs(:where).returns(EXPECTED_VALUE)" as an AST:
     builder.literal!(
       :send,
-      builder.literal!(:send, builder._type, :stubs, builder.sym(:where)),
+      builder.literal!(:send, builder.TYPE, :stubs, builder.sym(:where)),
       :returns,
       # Don't match non-array return types, such as Topic.stubs(:where).returns(Topic)
-      builder._expected_value { |l| l.name == :array }
+      builder.EXPECTED_VALUE { |l| l.name == :array }
     )
   end
 
@@ -20,7 +20,7 @@ class RefactorWhereFirstStubs
     # "TYPE.stubs(:find_by).returns(EXPECTED_VALUE)" as an AST
     builder.literal!(
       :send,
-      builder.literal!(:send, builder._type, :stubs, builder.sym(:find_by)),
+      builder.literal!(:send, builder.TYPE, :stubs, builder.sym(:find_by)),
       :returns,
       # Refactor the argument to "returns" from [] to nil or from [X] to X
       builder.derivation!(:expected_value) do |expected_value, builder|
