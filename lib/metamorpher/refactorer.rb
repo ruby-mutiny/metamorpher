@@ -1,13 +1,10 @@
 require "metamorpher/refactorer/merger"
 require "metamorpher/refactorer/site"
-require "metamorpher/builders/ast"
 require "metamorpher/rewriter/rule"
 require "metamorpher/drivers/ruby"
 
 module Metamorpher
   module Refactorer
-    include Builders::AST
-
     def refactor(src, &block)
       literal = driver.parse(src)
       replacements = reduce_to_replacements(src, literal)

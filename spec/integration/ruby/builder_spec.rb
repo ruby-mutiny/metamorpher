@@ -1,7 +1,5 @@
 require "metamorpher"
 
-Metamorpher.configure(builder: :ruby)
-
 describe Metamorpher.builder do
   let(:ast_builder) { Metamorpher::Builders::AST::Builder.new }
 
@@ -112,5 +110,3 @@ describe Metamorpher.builder do
     end
   end
 end
-
-Metamorpher.configure(builder: :ast)

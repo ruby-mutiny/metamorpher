@@ -1,12 +1,12 @@
 require "metamorpher/version"
-require "metamorpher/builders/ast"
+require "metamorpher/builders/ruby"
 require "metamorpher/matcher"
 require "metamorpher/rewriter"
 require "metamorpher/refactorer"
 
 module Metamorpher
   def self.builder
-    @builder ||= Builders::AST::Builder.new
+    @builder ||= Builders::Ruby::Builder.new
   end
 
   def self.configure(builder: :ast)

@@ -1,8 +1,11 @@
+require "metamorpher/builders/ast"
+
 module Metamorpher
   module Builders
     module Ruby
       class UppercaseConstantRewriter
         include Metamorpher::Rewriter
+        include Metamorpher::Builders::AST
 
         def pattern
           builder.const(

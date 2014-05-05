@@ -28,10 +28,21 @@ UnnecessaryConditionalRefactorer.new.refactor("result = if some_predicate then t
 
 This simple example is short, but terse! To fully understand it, you might now want to read about:
 
-* [Building terms](#building-terms) - how to create the data structure (terms) used by Rewriters and Matchers.
-* [Matchers](#matchers) - how to determine whether an expression adheres to a pattern (i.e., matches a term).
-* [Rewriters](#rewriters) - how to transform expressions into other expressions.
-* [Refactorers](#refactorers) - how to use rewriters to refactor (Ruby) programs.
+* [Fundamentals](#fundamentals) 
+    * [Building terms](#building-terms) - how to create the data structure (terms) used by Rewriters and Matchers.
+    * [Matchers](#matchers) - how to determine whether an expression adheres to a pattern (i.e., matches a term).
+    * [Rewriters](#rewriters) - how to transform expressions into other expressions.
+
+* [Practicalities](#practicalities) - using metamorpher to manipulate (Ruby) programs
+    * [Building Ruby terms](#building-ruby-terms) - how to concisely create terms that represent Ruby programs.
+    * [Refactorers](#refactorers) - how to use rewriters to refactor Ruby programs.
+
+
+## Fundamentals
+
+Metamorpher is based on the theory of [tutorial on term rewriting](http://www.meta-environment.org/doc/books/extraction-transformation/term-rewriting/term-rewriting.html). The following sections describe how to build terms (the key data structure used in Metamorpher), how to use terms to search over programs using matchers, and how to transform parts of a program using rewriters.
+
+**Note** that the examples in this section operate on a fictional programming language (i.e., not Ruby). For examples that manipulate Ruby programs, see the [practicalities](#practicalities) section.
 
 ### Building terms
 
@@ -42,12 +53,12 @@ The primary data structure used for [rewriting](#rewriters) and for [matching](#
 * Greedy variable - a variable that is bound to a set of subterms during [matching](#matchers).
 * Derivation - a placeholder node, which is replaced during [rewriting](#rewriters).
 
-To simplify the construction of terms, metamorpher provides the `Metamorpher::Builder` class:
+To simplify the construction of terms, metamorpher provides the `Metamorpher::Builders::AST::Builder` class, which is demonstrated below. 
 
 ```ruby
 require "metamorpher"
 
-builder = Metamorpher::Builder.new
+include Metamorpher::Builder::AST
 
 builder.literal! :succ # => succ
 builder.literal! 4 # => 4
@@ -318,6 +329,68 @@ builder.derivation! :key, :value do |key, value|
 end
 ```
 
+## Practicalities
+
+Metamorpher provides modules that can be used to simplify the transformation of Ruby programs. This section describes how to build Metamorpher terms that represent Ruby programs, and how to refactor Ruby programs. [Matchers](#matchers) and [Rewriters](#rewriters) can be used to manipulate Ruby programs too.
+
+**Note** that Metamorpher is not limited to manipulating Ruby programs. For more details on how Metamorpher works and its language-independent core, see the [fundamentals](#fundamentals) section.
+
+### Building Ruby terms
+
+To match, rewrite or refactor Ruby programs, it's necessary to create [terms](#building-terms)) that represent Ruby programs. Metamorpher provides the `Metamorpher::Builders::Ruby::Builder` class to simplify this process.
+
+Recall that term is a tree (i.e., an acyclic graph), whose nodes are either a:
+
+* Literal - a node of the abstract-syntax tree of a program.
+* Variable - a named node, which is bound to a subterm (subtree) during [matching](#matchers).
+* Greedy variable - a variable that is bound to a set of subterms during [matching](#matchers).
+* Derivation - a placeholder node, which is replaced during [rewriting](#rewriters).
+
+The following examples demonstrate the way in which terms can built from strings that resemble Ruby programs:
+
+```ruby
+require "metamorpher"
+
+include Metamorpher::Builders::Ruby
+
+builder.build("2") => int(2)
+builder.build("2 + 2") => send(int(2), +, int(2))
+```
+
+To build terms that contain variables, use uppercase characters:
+
+```ruby
+builder.build("2 + ADDEND") # => send(int(2), +, ADDEND)
+builder.build("hello(PARAMS_)") # => send(, hello, PARAMS+)
+```
+
+Variables can be conditional, in which case they are specified by appending a call to `ensuring`:
+
+```ruby
+builder
+  .build("METHOD_CALL(:foo, :bar)")
+  .ensuring(METHOD_CALL) { |m| m.name =~ /^find_by_/ }
+ # => METHOD?
+```
+
+Similar, derivations can be specified by appending a call to `deriving`:
+
+```ruby
+builder
+  .build("PLURAL(:foo, :bar)")
+  .deriving("PLURAL", "SINGULAR") do |singular|
+    builder.build(singular.name.to_s + "s")
+  end
+ # [SINGULAR] -> ...
+
+builder
+  .build("HASH")
+  .deriving("HASH", "KEY", "VALUE") do |key, value|
+    builder.build("[#{key}, #{value}]")
+  end
+ # [KEY, VALUE] -> ...
+```
+
 ### Refactorers 
 
 Refactorers are [rewriters](#rewriters) that are specialised for rewriting program source code. A refactorer parses a program's source code, rewrites the source code, and returns the unparsed, rewritten source code. 
@@ -329,13 +402,14 @@ require "metamorpher"
 
 class UnnecessaryConditionalRefactorer
   include Metamorpher::Refactorer
-  
+  include Metamorpher::Builders::Ruby
+
   def pattern
-    builder.if(builder.CONDITION, :true, :false)
+    builder.build("if CONDITION then true else false end")
   end
-  
+
   def replacement
-    builder.CONDITION
+    builder.build("CONDITION")
   end
 end
 

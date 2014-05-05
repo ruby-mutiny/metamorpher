@@ -1,6 +1,11 @@
 require "metamorpher"
 
-describe Metamorpher.builder do
+describe Metamorpher do
+  subject { Metamorpher.builder }
+
+  before { Metamorpher.configure(builder: :ast)  }
+  after  { Metamorpher.configure(builder: :ruby) }
+
   it_behaves_like "a literal builder"
   it_behaves_like "a variable builder"
   it_behaves_like "a greedy variable builder"

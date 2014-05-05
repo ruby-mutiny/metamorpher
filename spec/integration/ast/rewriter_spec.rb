@@ -1,11 +1,13 @@
 require "metamorpher"
+require "metamorpher/builders/ast"
 
 describe "Rewriting" do
-  let(:builder) { Metamorpher.builder }
+  let(:builder) { Metamorpher::Builders::AST::Builder.new }
 
   describe "literals" do
     class SuccZeroRewriter
       include Metamorpher::Rewriter
+      include Metamorpher::Builders::AST
 
       def pattern
         builder.literal! :succ, 0
@@ -90,6 +92,7 @@ describe "Rewriting" do
     describe "from a single variable" do
       class PluraliseRewriter
         include Metamorpher::Rewriter
+        include Metamorpher::Builders::AST
 
         def pattern
           builder.SINGULAR
@@ -115,6 +118,7 @@ describe "Rewriting" do
     describe "from multiple variables" do
       class RocketRewriter
         include Metamorpher::Rewriter
+        include Metamorpher::Builders::AST
 
         def pattern
           builder.literal!(:"=>", builder.KEY, builder.VALUE)

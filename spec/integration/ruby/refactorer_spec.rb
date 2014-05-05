@@ -1,18 +1,17 @@
 require "metamorpher"
 
 describe "Refactorer" do
-  let(:builder) { Metamorpher.builder }
-
   describe "for Ruby" do
     class UnnecessaryConditionalRefactorer
       include Metamorpher::Refactorer
+      include Metamorpher::Builders::Ruby
 
       def pattern
-        builder.if(builder.CONDITION, :true, :false)
+        builder.build("if CONDITION then true else false end")
       end
 
       def replacement
-        builder.CONDITION
+        builder.build("CONDITION")
       end
     end
 
@@ -35,7 +34,7 @@ describe "Refactorer" do
     let(:not_refactorable) { "nothing_to_see_here = 42" }
 
     describe "by calling refactor" do
-      describe "for code that can be refactored" do
+      describe "for code that can be refactored"do
         it "should return the refactored code" do
           expect(subject.refactor(refactorable)).to eq(refactored)
         end

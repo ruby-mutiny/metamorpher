@@ -1,11 +1,13 @@
 require "metamorpher"
+require "metamorpher/builders/ast"
 
 describe "Matching" do
-  let(:builder) { Metamorpher.builder }
+  let(:builder) { Metamorpher::Builders::AST::Builder.new }
 
   describe "literals" do
     class SuccZeroMatcher
       include Metamorpher::Matcher
+      include Metamorpher::Builders::AST
 
       def pattern
         builder.succ(0)
@@ -30,6 +32,7 @@ describe "Matching" do
   describe "variables" do
     class SuccMatcher
       include Metamorpher::Matcher
+      include Metamorpher::Builders::AST
 
       def pattern
         builder.succ(builder.X)
@@ -61,6 +64,7 @@ describe "Matching" do
   describe "conditional variables" do
     class DynamicFinderMatcher
       include Metamorpher::Matcher
+      include Metamorpher::Builders::AST
 
       def pattern
         builder.literal!(
@@ -89,6 +93,7 @@ describe "Matching" do
   describe "greedy variables" do
     class MultiAddMatcher
       include Metamorpher::Matcher
+      include Metamorpher::Builders::AST
 
       def pattern
         builder.add(
