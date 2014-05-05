@@ -13,7 +13,13 @@ module Metamorpher
 
         def replacement
           builder.derivation!(:variable_to_be) do |variable_to_be, builder|
-            builder.variable! variable_to_be.name.downcase
+            name = variable_to_be.name.to_s
+
+            if name.end_with?("_")
+              builder.greedy_variable! name.chomp("_").downcase.to_sym
+            else
+              builder.variable! name.downcase.to_sym
+            end
           end
         end
       end

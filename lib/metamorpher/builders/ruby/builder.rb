@@ -1,4 +1,5 @@
 require "metamorpher/drivers/ruby"
+require "metamorpher/builders/ruby/term"
 require "metamorpher/builders/ruby/uppercase_constant_rewriter"
 
 module Metamorpher
@@ -6,7 +7,7 @@ module Metamorpher
     module Ruby
       class Builder
         def build(source)
-          rewriter.reduce(driver.parse(source))
+          rewriter.reduce(driver.parse(source)).extend(Term)
         end
 
         private
