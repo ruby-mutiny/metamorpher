@@ -1,20 +1,14 @@
 require "metamorpher"
-require "metamorpher/refactorer"
 
 class RefactorWhereFirstToFindBy
   include Metamorpher::Refactorer
+  include Metamorpher::Builders::Ruby
 
   def pattern
-    # "TYPE.where(PARAMS...).first" as an AST:
-    builder.literal!(
-      :send,
-      builder.literal!(:send, builder.TYPE, :where, builder.PARAMS_),
-      :first
-    )
+    builder.build("TYPE.where(PARAMS_).first")
   end
 
   def replacement
-    # "TYPE.find_by(PARAMS...)" as an AST:
-    builder.literal!(:send, builder.TYPE, :find_by, builder.PARAMS_)
+    builder.build("TYPE.find_by(PARAMS_)")
   end
 end

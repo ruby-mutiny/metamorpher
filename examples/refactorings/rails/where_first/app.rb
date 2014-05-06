@@ -1,7 +1,6 @@
 require "optparse"
 require_relative "refactorers/refactor_where_first_to_find_by.rb"
 require_relative "refactorers/refactor_where_first_not_called_expectations.rb"
-require_relative "refactorers/refactor_where_first_stubs.rb"
 require_relative "refactorers/refactor_where_first_mocks.rb"
 require_relative "refactorers/refactor_where_first_strict_mocks.rb"
 
@@ -25,10 +24,8 @@ puts "Refactoring in source directory: #{base}"
   # Refactor ".expect(:where).never" to ".expect(:find_by).never"
   RefactorWhereFirstNotCalledExpectations,
 
-  # Refactor ".stubs(:where).return([X])" to ".stubs(:find_by).return(X)"
-  RefactorWhereFirstStubs,
-
   # Refactor ".expect(:where).return([X])" to ".expect(:find_by).return(X)"
+  #      and ".stubs(:where).return([X])" to ".stubs(:find_by).return(X)"
   RefactorWhereFirstMocks,
 
   # Refactor ".expect(:where).with(...).return([X])" to ".expect(:find_by).with(...).return(X)"

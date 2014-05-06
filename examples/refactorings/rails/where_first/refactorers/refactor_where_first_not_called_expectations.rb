@@ -1,24 +1,14 @@
 require "metamorpher"
-require "metamorpher/refactorer"
 
 class RefactorWhereFirstNotCalledExpectations
   include Metamorpher::Refactorer
+  include Metamorpher::Builders::Ruby
 
   def pattern
-    # "TYPE.expects(:where).never" as an AST:
-    builder.literal!(
-      :send,
-      builder.literal!(:send, builder.TYPE, :expects, builder.sym(:where)),
-      :never
-    )
+    builder.build("TYPE.expects(:where).never")
   end
 
   def replacement
-    # "TYPE.expects(:find_by).never" as an AST:
-    builder.literal!(
-      :send,
-      builder.literal!(:send, builder.TYPE, :expects, builder.sym(:find_by)),
-      :never
-    )
+    builder.build("TYPE.expects(:find_by).never")
   end
 end

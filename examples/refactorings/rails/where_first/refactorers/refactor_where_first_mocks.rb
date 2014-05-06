@@ -1,35 +1,31 @@
 require "metamorpher"
-require "metamorpher/refactorer"
 
 class RefactorWhereFirstMocks
   include Metamorpher::Refactorer
+  include Metamorpher::Builders::Ruby
 
   def pattern
-    # "TYPE.expects(:where).returns(EXPECTED_VALUE)" as an AST:
-    builder.literal!(
-      :send,
-      builder.literal!(:send, builder.TYPE, :expects, builder.sym(:where)),
-      :returns,
-      builder.EXPECTED_VALUE
-    )
+    builder
+     .build("TYPE.DOUBLE_METHOD(:where).returns(ARRAY_VALUE)")
+     .ensuring("DOUBLE_METHOD") { |m| m.name == :expects || m.name == :stubs }
+     .ensuring("ARRAY_VALUE") { |v| v.name == :array }
+     # Doesn't match non-array return types, such as Topic.stubs(:where).returns(Topic)
   end
 
-  # rubocop:disable MethodLength
   def replacement
-    # "TYPE.expects(:find_by).returns(EXPECTED_VALUE)" as an AST:
-    builder.literal!(
-      :send,
-      builder.literal!(:send, builder.TYPE, :expects, builder.sym(:find_by)),
-      :returns,
-      # Refactor the argument to "returns" from [] to nil or from [X] to X
-      builder.derivation!(:expected_value) do |expected_value, builder|
-        if expected_value.children.empty?
-          builder.literal! :nil
-        else
-          expected_value.children.first
-        end
-      end
-    )
+    builder
+     .build("TYPE.DOUBLE_METHOD(:find_by).returns(SINGLE_VALUE)")
+     .deriving("SINGLE_VALUE", "ARRAY_VALUE") { |array_value| take_first(array_value) }
   end
-  # rubocop:enable MethodLength
+
+  private
+
+  # Refactor the argument from [] to nil, or from [X] to X
+  def take_first(array_value)
+    if array_value.children.empty?
+      builder.build("nil")
+    else
+      array_value.children.first
+    end
+  end
 end
