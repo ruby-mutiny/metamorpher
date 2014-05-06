@@ -11,37 +11,37 @@ require "metamorpher"
 
 class UnnecessaryConditionalRefactorer
   include Metamorpher::Refactorer
-  include Metamorpher::Builders::AST
-  
+  include Metamorpher::Builders::Ruby
+
   def pattern
-    # Look for: if(CONDITION, true, false)
-    builder.if(builder.CONDITION, :true, :false)
+    builder.build("if CONDITION then true else false end")
   end
-  
+
   def replacement
-    # Replace with: CONDITION
-    builder.CONDITION
+    builder.build("CONDITION")
   end
 end
 
-UnnecessaryConditionalRefactorer.new.refactor("result = if some_predicate then true else false end") # => "result = some_predicate"
+program = "result = if some_predicate then true else false end"
+UnnecessaryConditionalRefactorer.new.refactor(program)
+ # => "result = some_predicate"
 ```
 
 This simple example is short, but terse! To fully understand it, you might now want to read about:
 
-* [Fundamentals](#fundamentals) 
+* [Fundamentals](#fundamentals) - Information on the core of metamorpher and the theory of term rewriting:
     * [Building terms](#building-terms) - how to create the data structure (terms) used by Rewriters and Matchers.
     * [Matchers](#matchers) - how to determine whether an expression adheres to a pattern (i.e., matches a term).
     * [Rewriters](#rewriters) - how to transform expressions into other expressions.
 
-* [Practicalities](#practicalities) - using metamorpher to manipulate (Ruby) programs
+* [Practicalities](#practicalities) - Information on how to use metamorpher to manipulate (Ruby) programs:
     * [Building Ruby terms](#building-ruby-terms) - how to concisely create terms that represent Ruby programs.
     * [Refactorers](#refactorers) - how to use rewriters to refactor Ruby programs.
 
 
 ## Fundamentals
 
-Metamorpher is based on the theory of [tutorial on term rewriting](http://www.meta-environment.org/doc/books/extraction-transformation/term-rewriting/term-rewriting.html). The following sections describe how to build terms (the key data structure used in Metamorpher), how to use terms to search over programs using matchers, and how to transform parts of a program using rewriters.
+Metamorpher is based on the theory of [term rewriting](http://www.meta-environment.org/doc/books/extraction-transformation/term-rewriting/term-rewriting.html). The following sections describe how to build terms (the key data structure used in metamorpher), how to use terms to search over programs using matchers, and how to transform parts of a program using rewriters.
 
 **Note** that the examples in this section operate on a fictional programming language (i.e., not Ruby). For examples that manipulate Ruby programs, see the [practicalities](#practicalities) section.
 
@@ -338,13 +338,13 @@ end
 
 ## Practicalities
 
-Metamorpher provides modules that can be used to simplify the transformation of Ruby programs. This section describes how to build Metamorpher terms that represent Ruby programs, and how to refactor Ruby programs. [Matchers](#matchers) and [Rewriters](#rewriters) can be used to manipulate Ruby programs too.
+Metamorpher provides modules that can be used to simplify the transformation of Ruby programs. This section describes how to build metamorpher terms that represent Ruby programs, and how to refactor Ruby programs. [Matchers](#matchers) and [Rewriters](#rewriters) can be used to manipulate Ruby programs too.
 
-**Note** that Metamorpher is not limited to manipulating Ruby programs. For more details on how Metamorpher works and its language-independent core, see the [fundamentals](#fundamentals) section.
+**Note** that metamorpher is not limited to manipulating Ruby programs. For more details on how metamorpher works and its language-independent core, see the [fundamentals](#fundamentals) section.
 
 ### Building Ruby terms
 
-To match, rewrite or refactor Ruby programs, it's necessary to create [terms](#building-terms)) that represent Ruby programs. Metamorpher provides the `Metamorpher::Builders::Ruby::Builder` class to simplify this process.
+To match, rewrite or refactor Ruby programs, it's necessary to create [terms](#building-terms) that represent Ruby programs. Metamorpher provides the `Metamorpher::Builders::Ruby::Builder` class to simplify this process.
 
 Recall that term is a tree (i.e., an acyclic graph), whose nodes are either a:
 
@@ -360,11 +360,11 @@ require "metamorpher"
 
 include Metamorpher::Builders::Ruby
 
-builder.build("2") => int(2)
-builder.build("2 + 2") => send(int(2), +, int(2))
+builder.build("2") # => int(2)
+builder.build("2 + 2") # => send(int(2), +, int(2))
 ```
 
-To build terms that contain variables, use uppercase characters:
+To build terms that contain variables, use uppercase characters. To build a greedy variable, ensure the name of the variable ends with an underscore:
 
 ```ruby
 builder.build("2 + ADDEND") # => send(int(2), +, ADDEND)
@@ -420,7 +420,9 @@ class UnnecessaryConditionalRefactorer
   end
 end
 
-UnnecessaryConditionalRefactorer.new.refactor("a = if some_predicate then true else false end") # => "a = some_predicate"
+program = "a = if some_predicate then true else false end"
+UnnecessaryConditionalRefactorer.new.refactor(program)
+ # => "a = some_predicate"
 ```
 
 The `refactor` method can optionally take a block, which is called immediately before the matching code is replaced with the refactored code:
@@ -482,7 +484,7 @@ end
 
 #### Refactoring programs written in other languages
 
-By default, `Metamorpher::Refactorer` assumes that you wish to refactor Ruby programs, and will attempt to `require` the [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems. If instead you wish to use a different Ruby parser / unparser or you wish to refactor a program written in a language other than Ruby, you should specify a different `driver`, as shown below. (A `Metamorpher::Driver` is responsible for transforming source code to a Metamorpher::Terms::Literal, and vice-versa).
+By default, `Metamorpher::Refactorer` assumes that you wish to refactor Ruby programs, and will attempt to `require` the [parser](https://github.com/whitequark/parser) and [unparser](https://github.com/mbj/unparser) gems. If instead you wish to use a different Ruby parser / unparser or you wish to refactor a program written in a language other than Ruby, you should specify a different `driver`, as shown below. (A `Metamorpher::Driver` is responsible for transforming source code to metamorpher [terms](#building-terms), and vice-versa).
 
 ```ruby
 class JavaRefactorer
@@ -536,4 +538,4 @@ Or install it yourself as:
 Thank-you to the authors of other projects and resources that have inspired metamorpher, including:
 
 * Paul Klint's [tutorial on term rewriting](http://www.meta-environment.org/doc/books/extraction-transformation/term-rewriting/term-rewriting.html), which metamorpher is heavily based on.
-* Jim Weirich's [Builder](https://github.com/jimweirich/builder) gem, which heavily influenced the design of Metamorpher::Builder.
+* Jim Weirich's [Builder](https://github.com/jimweirich/builder) gem, which heavily influenced the design of `Metamorpher::Builders::AST::Builder`.
