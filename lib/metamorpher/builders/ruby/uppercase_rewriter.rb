@@ -3,15 +3,12 @@ require "metamorpher/builders/ast"
 module Metamorpher
   module Builders
     module Ruby
-      class UppercaseConstantRewriter
+      class UppercaseRewriter
         include Metamorpher::Rewriter
         include Metamorpher::Builders::AST
 
         def pattern
-          builder.const(
-            builder.literal!(nil),
-            builder.VARIABLE_TO_BE { |v| v.name && v.name.to_s[/^[A-Z_]*$/] }
-          )
+          builder.VARIABLE_TO_BE { |v| v.name && v.name.to_s[/^[A-Z_]*$/] }
         end
 
         def replacement

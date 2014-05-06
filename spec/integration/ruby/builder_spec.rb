@@ -31,6 +31,16 @@ describe Metamorpher.builder do
       )
     end
 
+    it "should convert uppercase messages to variables" do
+      expect(subject.build("User.METHOD")).to eq(
+        ast_builder.literal!(
+          :send,
+          ast_builder.literal!(:const, nil, :User),
+          ast_builder.METHOD
+        )
+      )
+    end
+
     it "should convert uppercase constants ending with underscore to greedy variables" do
       expect(subject.build("LEFT_ + RIGHT_")).to eq(
         ast_builder.literal!(
