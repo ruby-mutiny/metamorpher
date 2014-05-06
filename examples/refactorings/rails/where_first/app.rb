@@ -40,7 +40,7 @@ puts "Refactoring in source directory: #{base}"
       puts "In #{path}:"
 
       changes.each do |change|
-        puts "\tAt #{change.position}, inserting:\n\t\t#{change.value}"
+        puts "\tAt #{change.original_position}, inserting:\n\t\t#{change.refactored_code}"
         puts ""
       end
 
