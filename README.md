@@ -555,10 +555,7 @@ class RefactorWhereFirstToFindBy
      .deriving("HASH", "METHOD", "PARAMS") do |method, params|
        keys = attributes_from_dynamic_finder(method.name.to_s)
        values = params.map { |p| driver.unparse(p) }
-       hash = create_hash_string(keys, values)
-       puts hash
-       p hash
-       builder.build(hash)
+       builder.build(create_hash_string(keys, values))
      end
   end
   
