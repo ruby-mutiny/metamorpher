@@ -67,13 +67,7 @@ describe "Rewriting" do
         expect { |b| subject.apply(expression, &b) }.to yield_with_args(expression, reduced)
       end
 
-      # Failing due to a bug in rewrite / replace -> all instances of replacee
-      # are replaced not only the matched instance.
-      # I think the solution might be to have a match capture more information
-      # (e.g., about its context). For example, we might add a path attribute
-      # to Match, and use a traverser to navigate the tree during matching,
-      # keeping track of the path.
-      xit "should rewrite only the first matching expressions" do
+      it "should rewrite only the first matching expressions" do
         expression = builder.add(builder.succ(0), builder.succ(0))
         reduced = builder.add(builder.literal!(1), builder.succ(0))
 

@@ -20,6 +20,14 @@ module Metamorpher
         name
       end
 
+      def path
+        if parent
+          parent.path << parent.children.index { |c| c.equal?(self) }
+        else
+          []
+        end
+      end
+
       def with_younger_siblings
         if parent
           parent.children_younger_than_or_equal_to(self)

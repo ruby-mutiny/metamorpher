@@ -24,7 +24,7 @@ module Metamorpher
       def rewrite(ast, match, &block)
         original, rewritten = match.root, replacement.substitute(match.substitution)
         block.call(original, rewritten) if block
-        ast.replace(original, rewritten)
+        ast.replace(original.path, rewritten)
       end
 
       def matches_for(ast)

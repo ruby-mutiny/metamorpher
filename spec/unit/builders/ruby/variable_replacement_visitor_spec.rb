@@ -19,7 +19,7 @@ module Metamorpher
           original = builder.literal!(:+, 2, builder.variable!(:foo))
           replaced = subject.visit(original)
 
-          expect(replaced).to eq(original.replace(original.children.last, replacement))
+          expect(replaced).to eq(original.replace(original.children.last.path, replacement))
         end
 
         it "should not replace a variable with a different name" do

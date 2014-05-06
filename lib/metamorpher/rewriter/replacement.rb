@@ -1,36 +1,14 @@
-require "metamorpher/visitable/visitor"
-
 module Metamorpher
   module Rewriter
     module Replacement
-      def replace(replacee, replacement)
-        accept ReplacementVisitor.new(replacee, replacement)
-      end
-    end
-
-    class ReplacementVisitor < Visitable::Visitor
-      attr_accessor :replacee, :replacement
-
-      def initialize(replacee, replacement)
-        @replacee, @replacement = replacee, replacement
-      end
-
-      def visit_literal(literal)
-        if literal == replacee
+      def replace(path, replacement)
+        if path.empty?
           replacement
         else
           Terms::Literal.new(
-            name: literal.name,
-            children: literal.children.map { |child| visit(child) }
+            name: name,
+            children: children.map_at(path.first) { |e| e.replace(path.drop(1), replacement) }
           )
-        end
-      end
-
-      def visit_term(term)
-        if term == replacee
-          replacement
-        else
-          term
         end
       end
     end
