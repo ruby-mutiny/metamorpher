@@ -506,10 +506,86 @@ end
 
 #### Examples 
 
+Below are a few examples of using metamorpher to perform refactorings on Ruby code.
+
 ##### Refactor Rails where(...).first
+
+The following refactoring can be used to slightly tidy up code that uses ActiveRecord. Specifically, it refactors expressions of the form `User.where(...).first` to expressions of the form `User.find_by(...)`.
+
+```ruby
+require "metamorpher"
+
+class RefactorWhereFirstToFindBy
+  include Metamorpher::Refactorer
+  include Metamorpher::Builders::Ruby
+
+  def pattern
+    builder.build("TYPE.where(PARAMS_).first")
+  end
+
+  def replacement
+    builder.build("TYPE.find_by(PARAMS_)")
+  end
+end
+```
+
+This example was put together following a suggestion from [Sam Saffron](https://github.com/SamSaffron) and was applied to the discourse project. Complete code for the example (which includes refactorers for the impacted RSpec tests) is [here](https://github.com/mutiny/metamorpher/tree/master/examples/refactorings/rails/where_first).
+
 
 ##### Refactor Rails dynamic find_by
 
+The following refactoring can be used to switch from ActiveRecord's dynamic `find_by` method to a version that uses a hash.
+
+```ruby
+require "metamorpher"
+
+class RefactorWhereFirstToFindBy
+  include Metamorpher::Refactorer
+  include Metamorpher::Builders::Ruby
+
+  def pattern
+    builder
+     .build("TYPE.METHOD(PARAMS_)")
+     .ensuring("METHOD") { |f| f.name[/^find_by_/] }
+  end
+
+  def replacement
+    builder
+     .build("TYPE.find_by(HASH)")
+     .deriving("HASH", "METHOD", "PARAMS") do |method, params|
+       keys = attributes_from_dynamic_finder(method.name.to_s)
+       values = params.map { |p| driver.unparse(p) }
+       hash = create_hash_string(keys, values)
+       puts hash
+       p hash
+       builder.build(hash)
+     end
+  end
+  
+  private
+  
+  # Extracts an array of attributes from the name of a dynamic
+  # finder, such as find_by_asset_id_and_object_path.
+  def attributes_from_dynamic_finder(dynamic_finder)
+    dynamic_finder["find_by_".length..-1].split("_and_")
+  end
+  
+  # Builds a string representation of a hash from a set of keys
+  # and a corresponding set of values
+  def create_hash_string(keys, values)
+    "{" + create_pairs_string(keys, values) + "}"
+  end
+  
+  def create_pairs_string(keys, values)
+    keys
+     .zip(values)
+     .map { |k, v| ":#{k} => #{v}" }
+     .join(",")
+  end
+end
+```
+
+This example was put together following a suggestion from [Brian Morearty](https://github.com/bmorearty).
 
 ## Installation
 
