@@ -1,3 +1,4 @@
+require "metamorpher/drivers/parse_error"
 require "metamorpher/terms/literal"
 require "parser/current"
 require "unparser"
@@ -7,6 +8,8 @@ module Metamorpher
     class Ruby
       def parse(src)
         import(@root = parser.parse(src))
+      rescue Parser::SyntaxError
+        raise ParseError
       end
 
       def unparse(literal)

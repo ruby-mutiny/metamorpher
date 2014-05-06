@@ -15,7 +15,10 @@ describe Metamorpher.builder do
       )
     end
 
-    xit "should raise for invalid source" do
+    it "should raise for invalid source" do
+      silence_stream(STDERR) do
+        expect { subject.build("1 + ") }.to raise_error(Metamorpher::Drivers::ParseError)
+      end
     end
   end
 
