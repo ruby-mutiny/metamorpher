@@ -12,7 +12,7 @@ module Metamorpher
           end
         end
 
-        def shorthand?(method, *arguments, &block)
+        def shorthand?(method, *_arguments, &_block)
           !method[/\p{Lower}/] && method.to_s.end_with?("_")
         end
 

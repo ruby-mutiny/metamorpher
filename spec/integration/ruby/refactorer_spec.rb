@@ -19,8 +19,8 @@ describe "Refactorer" do
 
     let(:refactorable) do
       "def run\n" \
-      "  a = #{refactorable_code_for("some_predicate")}\n" \
-      "  b = #{refactorable_code_for("some_other_predicate")}\n" \
+      "  a = #{refactorable_code_for('some_predicate')}\n" \
+      "  b = #{refactorable_code_for('some_other_predicate')}\n" \
       "end"
     end
 
@@ -42,7 +42,7 @@ describe "Refactorer" do
         it "should yield for each refactoring site" do
           expect { |b| subject.refactor(refactorable, &b) }.to yield_successive_args(
             site_for(14..55, "some_predicate"),
-            site_for(63.. 110, "some_other_predicate")
+            site_for(63..110, "some_other_predicate")
           )
         end
       end
@@ -69,7 +69,7 @@ describe "Refactorer" do
         it "should yield for each refactoring site" do
           expect { |b| subject.refactor_file(refactorable_file, &b) }.to yield_successive_args(
             site_for(14..55, "some_predicate"),
-            site_for(63.. 110, "some_other_predicate")
+            site_for(63..110, "some_other_predicate")
           )
         end
       end
@@ -133,7 +133,7 @@ describe "Refactorer" do
           refactored,
           [
             site_for(14..55, "some_predicate"),
-            site_for(63.. 110, "some_other_predicate")
+            site_for(63..110, "some_other_predicate")
           ]
         ]
 
@@ -142,7 +142,7 @@ describe "Refactorer" do
           refactored,
           [
             site_for(14..55, "some_predicate"),
-            site_for(63.. 110, "some_other_predicate")
+            site_for(63..110, "some_other_predicate")
           ]
         ]
 

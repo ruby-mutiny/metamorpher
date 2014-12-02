@@ -78,9 +78,9 @@ describe Metamorpher.builder do
 
     it "should create several conditional variables from several calls to ensuring" do
       built = subject
-        .build("A + B")
-        .ensuring("A") { |n| n > 0 }
-        .ensuring("B") { |n| n < 0 }
+              .build("A + B")
+              .ensuring("A") { |n| n > 0 }
+              .ensuring("B") { |n| n < 0 }
 
       first_variable, _operator, last_variable = built.children
 
@@ -112,9 +112,9 @@ describe Metamorpher.builder do
 
     it "should create several derivations from several calls to deriving" do
       built = subject
-        .build("NEW_FIRST; NEW_LAST")
-        .deriving("NEW_FIRST", "FIRST") {}
-        .deriving("NEW_LAST", "LAST") {}
+              .build("NEW_FIRST; NEW_LAST")
+              .deriving("NEW_FIRST", "FIRST") {}
+              .deriving("NEW_LAST", "LAST") {}
 
       first_derived, last_derived = built.children
 

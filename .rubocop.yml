@@ -1,16 +1,19 @@
 AllCops:
-  Includes:
+  Include:
     - Gemfile
     - Rakefile
-  Excludes:
+  Exclude:
     - vendor/*
     - examples/refactorings/rails/where_first/sample_controller.rb
 
 StringLiterals:
-  EnforcedStyle: double_quotes
+  Enabled: false
 
 LineLength:
   Max: 99
 
 Documentation:
   Enabled: false
+
+Metrics/AbcSize:
+  Max: 16

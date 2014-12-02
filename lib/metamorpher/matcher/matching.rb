@@ -41,7 +41,7 @@ module Metamorpher
         end
       end
 
-      def visit_derived(derived)
+      def visit_derived(_derived)
         fail MatchingError, "Cannot match against a derived variable."
       end
 

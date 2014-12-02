@@ -6,7 +6,7 @@ module Metamorpher
       attributes :base, :derivation
 
       def inspect
-        "[#{base.map(&:upcase).join(", ")}] -> ..."
+        "[#{base.map(&:upcase).join(', ')}] -> ..."
       end
     end
   end

@@ -8,7 +8,7 @@ options = { overwrite: true }
 OptionParser.new do |opts|
   opts.banner = "Usage: refactorer.rb [options]"
 
-  opts.on("-d", "--dry-run", "Write changes to console, rather than to source files.") do |v|
+  opts.on("-d", "--dry-run", "Write changes to console, rather than to source files.") do |_v|
     options[:overwrite] = false
   end
 end.parse!

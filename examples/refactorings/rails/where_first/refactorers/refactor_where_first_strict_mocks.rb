@@ -10,8 +10,8 @@ class RefactorWhereFirstStrictMocks
 
   def replacement
     builder
-     .build("TYPE.expects(:find_by).with(PARAMS_).returns(SINGLE_VALUE)")
-     .deriving("SINGLE_VALUE", "ARRAY_VALUE") { |array_value| take_first(array_value) }
+      .build("TYPE.expects(:find_by).with(PARAMS_).returns(SINGLE_VALUE)")
+      .deriving("SINGLE_VALUE", "ARRAY_VALUE") { |array_value| take_first(array_value) }
   end
 
   private

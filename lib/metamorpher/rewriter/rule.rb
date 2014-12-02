@@ -31,7 +31,7 @@ module Metamorpher
         traverser.traverse(ast)
           .lazy # only compute the next match when needed
           .map { |current| pattern.match(current) }
-          .select { |result| result.matches? }
+          .select(&:matches?)
       end
     end
   end

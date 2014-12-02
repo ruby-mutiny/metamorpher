@@ -40,7 +40,7 @@ module Metamorpher
 
       def index(child)
         children.index(child) ||
-        fail(ArgumentError, "#{child.inspect} is not a child of #{inspect}")
+          fail(ArgumentError, "#{child.inspect} is not a child of #{inspect}")
       end
     end
   end

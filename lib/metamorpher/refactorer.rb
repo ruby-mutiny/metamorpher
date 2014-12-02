@@ -16,11 +16,10 @@ module Metamorpher
     end
 
     def refactor_files(paths, &block)
-      paths.reduce({}) do |result, path|
+      paths.each_with_object({}) do |path, result|
         changes = []
         result[path] = refactor_file(path) { |change| changes << change }
         block.call(path, result[path], changes) if block
-        result
       end
     end
 

@@ -17,7 +17,7 @@ namespace :style do
   require "rubocop/rake_task"
 
   desc "Run RuboCop on the lib directory"
-  Rubocop::RakeTask.new(:check) do |task|
+  RuboCop::RakeTask.new(:check) do |task|
     task.options = ["--auto-correct"]
   end
 end

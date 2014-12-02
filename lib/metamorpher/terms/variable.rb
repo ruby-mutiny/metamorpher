@@ -9,8 +9,8 @@ module Metamorpher
 
       def inspect
         name.to_s.upcase +
-        (greedy? ? "+" : "") +
-        (condition != DEFAULT_CONDITION ? "?" : "")
+          (greedy? ? "+" : "") +
+          (condition != DEFAULT_CONDITION ? "?" : "")
       end
     end
   end

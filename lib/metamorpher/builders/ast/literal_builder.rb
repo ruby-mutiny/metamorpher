@@ -8,7 +8,7 @@ module Metamorpher
           Terms::Literal.new(name: name, children: children.map { |c| termify(c) })
         end
 
-        def shorthand?(method, *arguments, &block)
+        def shorthand?(method, *_arguments, &_block)
           !method[/\p{Upper}/]
         end
 
@@ -23,7 +23,7 @@ module Metamorpher
         private
 
         def termify(item)
-          item.kind_of?(Terms::Term) ? item : literal!(item)
+          item.is_a?(Terms::Term) ? item : literal!(item)
         end
       end
     end
