@@ -2,6 +2,7 @@ require "metamorpher/builders/ast/literal_builder"
 require "metamorpher/builders/ast/variable_builder"
 require "metamorpher/builders/ast/greedy_variable_builder"
 require "metamorpher/builders/ast/derivation_builder"
+require "forwardable"
 
 module Metamorpher
   module Builders

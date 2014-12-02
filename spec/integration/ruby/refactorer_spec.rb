@@ -1,4 +1,5 @@
 require "metamorpher"
+require "tempfile"
 
 describe "Refactorer" do
   describe "for Ruby" do
