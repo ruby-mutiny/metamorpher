@@ -1,4 +1,4 @@
-# Metamorpher [![Build Status](https://travis-ci.org/mutiny/metamorpher.png)](https://travis-ci.org/mutiny/metamorpher) [![Code Climate](https://codeclimate.com/github/mutiny/metamorpher.png)](https://codeclimate.com/github/mutiny/metamorpher) [![Dependency Status](https://gemnasium.com/mutiny/metamorpher.png)](https://gemnasium.com/mutiny/metamorpher) [![Coverage Status](https://coveralls.io/repos/mutiny/metamorpher/badge.png?branch=master)](https://coveralls.io/r/mutiny/metamorpher?branch=master)
+# Metamorpher [![Build Status](https://travis-ci.org/mutiny/metamorpher.svg?branch=master)](https://travis-ci.org/mutiny/metamorpher) [![Code Climate](https://codeclimate.com/github/mutiny/metamorpher/badges/gpa.svg)](https://codeclimate.com/github/mutiny/metamorpher) [![Dependency Status](https://gemnasium.com/mutiny/metamorpher.svg)](https://gemnasium.com/mutiny/metamorpher) [![Test Coverage](https://codeclimate.com/github/mutiny/metamorpher/badges/coverage.svg)](https://codeclimate.com/github/mutiny/metamorpher)
 
 A term rewriting library for transforming (Ruby) programs.
 
