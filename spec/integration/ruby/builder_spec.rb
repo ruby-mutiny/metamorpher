@@ -72,8 +72,8 @@ describe Metamorpher.builder do
       built = subject.build("A").ensuring("A") { |n| n > 0 }
 
       expect(built.name).to eq(:a)
-      expect(built.condition.call(1)).to be_true
-      expect(built.condition.call(-1)).to be_false
+      expect(built.condition.call(1)).to be_truthy
+      expect(built.condition.call(-1)).to be_falsey
     end
 
     it "should create several conditional variables from several calls to ensuring" do
@@ -85,12 +85,12 @@ describe Metamorpher.builder do
       first_variable, _operator, last_variable = built.children
 
       expect(first_variable.name).to eq(:a)
-      expect(first_variable.condition.call(1)).to be_true
-      expect(first_variable.condition.call(-1)).to be_false
+      expect(first_variable.condition.call(1)).to be_truthy
+      expect(first_variable.condition.call(-1)).to be_falsey
 
       expect(last_variable.name).to eq(:b)
-      expect(last_variable.condition.call(-1)).to be_true
-      expect(last_variable.condition.call(1)).to be_false
+      expect(last_variable.condition.call(-1)).to be_truthy
+      expect(last_variable.condition.call(1)).to be_falsey
     end
   end
 

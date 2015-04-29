@@ -15,8 +15,8 @@ module Metamorpher
           built = subject.greedy_variable!(:a) { |term| term > 0 }
 
           expect(built.name).to eq(:a)
-          expect(built.condition.call(1)).to be_true
-          expect(built.condition.call(-1)).to be_false
+          expect(built.condition.call(1)).to be_truthy
+          expect(built.condition.call(-1)).to be_falsey
         end
 
         it "should not allow children" do
@@ -36,8 +36,8 @@ module Metamorpher
           built = subject.A_ { |term| term > 0 }
 
           expect(built.name).to eq(:a)
-          expect(built.condition.call(1)).to be_true
-          expect(built.condition.call(-1)).to be_false
+          expect(built.condition.call(1)).to be_truthy
+          expect(built.condition.call(-1)).to be_falsey
         end
 
         it "should not allow children" do
