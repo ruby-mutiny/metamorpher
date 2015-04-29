@@ -45,7 +45,7 @@ module Metamorpher
         Tree.new(children)
       end
 
-      class Tree < Struct.new(:children); end
+      Tree = Struct.new(:children)
     end
   end
 end

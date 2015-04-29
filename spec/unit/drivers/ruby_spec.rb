@@ -43,10 +43,10 @@ module Metamorpher
         let(:source)  { "LEFT + RIGHT" }
         let(:literal) do
           builder.literal!(
-           :send,
-           builder.const(nil, :LEFT),
-           :+,
-           builder.const(nil, :RIGHT)
+            :send,
+            builder.const(nil, :LEFT),
+            :+,
+            builder.const(nil, :RIGHT)
           )
         end
 
