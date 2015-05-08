@@ -1,7 +1,7 @@
-require "metamorpher/refactorer/site"
+require "metamorpher/transformer/site"
 
 module Metamorpher
-  module Refactorer
+  module Transformer
     describe Site do
       subject { Site.new(4..6, "foo", "bar") }
 

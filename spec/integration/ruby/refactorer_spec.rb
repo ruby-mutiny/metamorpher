@@ -176,7 +176,7 @@ describe "Refactorer" do
     end
 
     def site_for(original_position, predicate)
-      Metamorpher::Refactorer::Site.new(
+      Metamorpher::Transformer::Site.new(
         original_position,
         refactorable_code_for(predicate),
         predicate

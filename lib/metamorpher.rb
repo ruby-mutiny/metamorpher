@@ -6,6 +6,7 @@ require "metamorpher/support/map_at"
 require "metamorpher/matcher"
 require "metamorpher/rewriter"
 require "metamorpher/refactorer"
+require "metamorpher/mutator"
 
 module Metamorpher
   def self.builder

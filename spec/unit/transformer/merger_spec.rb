@@ -1,8 +1,8 @@
-require "metamorpher/refactorer/merger"
-require "metamorpher/refactorer/site"
+require "metamorpher/transformer/merger"
+require "metamorpher/transformer/site"
 
 module Metamorpher
-  module Refactorer
+  module Transformer
     describe Merger do
       let(:original) { "The quick brown fox jumps over the lazy dog." }
       subject { Merger.new(original) }

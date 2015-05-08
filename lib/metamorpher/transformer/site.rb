@@ -1,7 +1,7 @@
 require "attributable"
 
 module Metamorpher
-  module Refactorer
+  module Transformer
     Site = Struct.new(:original_position, :original_code, :refactored_code) do
       def slide(offset)
         new_position = (original_position.begin + offset)..(original_position.end + offset)

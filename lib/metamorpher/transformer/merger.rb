@@ -1,7 +1,7 @@
 require "attributable"
 
 module Metamorpher
-  module Refactorer
+  module Transformer
     Merger = Struct.new(:original) do
       def merge(*replacements, &block)
         original.dup.tap do |merged|

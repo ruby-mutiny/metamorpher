@@ -11,6 +11,10 @@ module Metamorpher
           decorate(rewrite(parse(source)))
         end
 
+        def build_all(*sources)
+          sources.map(&method(:build))
+        end
+
         private
 
         def decorate(term)

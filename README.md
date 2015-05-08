@@ -36,7 +36,7 @@ This simple example is short, but terse! To fully understand it, you might now w
 
 * [Practicalities](#practicalities) - Information on how to use metamorpher to manipulate (Ruby) programs:
     * [Building Ruby terms](#building-ruby-terms) - how to concisely create terms that represent Ruby programs.
-    * [Refactorers](#refactorers) - how to use rewriters to refactor Ruby programs.
+    * [Transformers](#transformers) - how to use rewriters to transform Ruby programs.
 
 
 ## Fundamentals
@@ -54,7 +54,7 @@ The primary data structure used for [rewriting](#rewriters) and for [matching](#
 * Greedy variable - a variable that is bound to a set of subterms during [matching](#matchers).
 * Derivation - a placeholder node, which is replaced during [rewriting](#rewriters).
 
-To simplify the construction of terms, metamorpher provides the `Metamorpher::Builders::AST::Builder` class, which is demonstrated below. 
+To simplify the construction of terms, metamorpher provides the `Metamorpher::Builders::AST::Builder` class, which is demonstrated below.
 
 ```ruby
 require "metamorpher"
@@ -71,7 +71,7 @@ builder.derivation! :singular do |singular, builder|
   builder.literal!(singular.name + "s")
 end
  # [SINGULAR] -> ...
- 
+
 builder.derivation! :key, :value do |key, value, builder|
   builder.pair(key, value)
 end
@@ -91,7 +91,7 @@ The builder provides a method missing shorthand for constructing literals, varia
 
 ```ruby
 builder.succ # => succ
-builder.N # => N 
+builder.N # => N
 builder.N_ # => N+
 ```
 
@@ -137,7 +137,7 @@ require "metamorpher"
 class SuccZeroMatcher
   include Metamorpher::Matcher
   include Metamorpher::Builders::AST
-  
+
   def pattern
     builder.succ(0)
   end
@@ -145,7 +145,7 @@ end
 
 expression = Metamorpher.builder.succ(0) # => succ(0)
 result = SuccZeroMatcher.new.run(expression)
- # => <Metamorpher::Matcher::Match root=succ(0), substitution={}> 
+ # => <Metamorpher::Matcher::Match root=succ(0), substitution={}>
 result.matches? # => true
 
 expression = Metamorpher.builder.succ(1) # => succ(1)
@@ -164,7 +164,7 @@ For example, suppose we wish to match expressions of the form `succ(X)` where X 
 class SuccMatcher
   include Metamorpher::Matcher
   include Metamorpher::Builders::AST
-  
+
   def pattern
     builder.succ(builder.X)
   end
@@ -172,21 +172,21 @@ end
 
 expression = Metamorpher.builder.succ(0) # => succ(0)
 SuccMatcher.new.run(expression)
- # => <Metamorpher::Matcher::Match root=succ(0), substitution={:x=>0}> 
+ # => <Metamorpher::Matcher::Match root=succ(0), substitution={:x=>0}>
 
 expression = Metamorpher.builder.succ(1) # => succ(1)
 SuccMatcher.new.run(expression)
  # => <Metamorpher::Matcher::Match root=succ(0), substitution={:x=>1}>
- 
+
 expression = Metamorpher.builder.succ(:n) # => succ(n)
 SuccMatcher.new.run(expression)
  # => <Metamorpher::Matcher::Match root=succ(n), substitution={:x=>n}>
 
 expression = Metamorpher.builder.succ(Metamorpher.builder.succ(:n)) # => succ(succ(n))
 SuccMatcher.new.run(expression)
- # => <Metamorpher::Matcher::Match root=succ(succ(n)), substitution={:x=>succ(n)}> 
+ # => <Metamorpher::Matcher::Match root=succ(succ(n)), substitution={:x=>succ(n)}>
 ```
-    
+
 #### Conditional variables
 
 By default, a variable matches any literal. Matching is more powerful when variables are able to match only those literals that satisfy some condition. Metamorpher provides conditional variables for this purpose.
@@ -197,7 +197,7 @@ For example, suppose that we wish to create a matcher that only matches method c
 class DynamicFinderMatcher
   include Metamorpher::Matcher
   include Metamorpher::Builders::AST
-  
+
   def pattern
     builder.literal!(
       :".",
@@ -209,7 +209,7 @@ end
 
 expression = Metamorpher.builder.literal!(:".", :User, :find_by_name) # => .(User, find_by_name)
 DynamicFinderMatcher.new.run(expression)
- # => #<Metamorpher::Matcher::Match root=.(User, find_by_name), substitution={:method=>find_by_name}> 
+ # => #<Metamorpher::Matcher::Match root=.(User, find_by_name), substitution={:method=>find_by_name}>
 
 expression = Metamorpher.builder.literal!(:".", :User, :find) # => .(User, find)
 DynamicFinderMatcher.new.run(expression)
@@ -226,7 +226,7 @@ For example, suppose that we wish to create a matcher that works for an expressi
 class MultiAddMatcher
   include Metamorpher::Matcher
   include Metamorpher::Builders::AST
-  
+
   def pattern
     builder.add(
       builder.ARGS_
@@ -235,10 +235,10 @@ class MultiAddMatcher
 end
 
 MultiAddMatcher.new.run(Metamorpher.builder.add(1,2))
- # => #<Metamorpher::Matcher::Match root=add(1,2), substitution={:args=>[1, 2]}> 
+ # => #<Metamorpher::Matcher::Match root=add(1,2), substitution={:args=>[1, 2]}>
 
 MultiAddMatcher.new.run(Metamorpher.builder.add(1,2,3))
- # => #<Metamorpher::Matcher::Match root=add(1,2,3), substitution={:args=>[1, 2, 3]}> 
+ # => #<Metamorpher::Matcher::Match root=add(1,2,3), substitution={:args=>[1, 2, 3]}>
 ```
 
 ### Rewriters
@@ -253,11 +253,11 @@ require "metamorpher"
 class SuccZeroRewriter
   include Metamorpher::Rewriter
   include Metamorpher::Builders::AST
-  
+
   def pattern
     builder.literal! :succ, 0
   end
-  
+
   def replacement
     builder.literal! 1
   end
@@ -300,7 +300,7 @@ SuccZeroRewriter.new.reduce(expression) do |matching, rewritten|
 end
  # About to replace 'succ(0)' at position [0] with '1'
  # About to replace 'succ(0)' at position [1] with '1'
- # => 
+ # =>
 ```
 
 #### Derivations
@@ -313,11 +313,11 @@ For example, suppose that we wish to create a rewriter that pluralises any liter
 class PluraliseRewriter
   include Metamorpher::Rewriter
   include Metamorpher::Builders::AST
-  
+
   def pattern
     builder.SINGULAR
   end
-  
+
   def replacement
     builder.derivation! :singular do |singular|
       builder.literal!(singular.name + "s")
@@ -398,11 +398,20 @@ builder
  # [KEY, VALUE] -> ...
 ```
 
-### Refactorers 
+### Transformers
 
-Refactorers are [rewriters](#rewriters) that are specialised for rewriting program source code. A refactorer parses a program's source code, rewrites the source code, and returns the unparsed, rewritten source code. 
+Transformers are [rewriters](#rewriters) that are specialised for rewriting program source code. A transformer parses a program's source code, rewrites the source code, and returns the unparsed, rewritten source code.
 
-Metamorpher provides the `Metamorpher::Refactorer` module for constructing classes that perform refactorings. Include it, specify a `pattern` and a `replacement`, and then call `refactor(src)`:
+Metamorpher provides two types of transformers:
+
+* Refactorers - refactorers produce a single transformed program in which all occurrences of a pattern are replaced
+* Mutators - mutators produce a set of transformed programs where each program has a single occurrence of a pattern is replaced
+
+For example, for the pattern `1 + 1` and the replacement `2`, a refactorer applied to `(1 + 1) * (1 + 1)` will produce `(2) * (2)` whereas a mutator will produce `[(2) * (1 + 1), (1 + 1) * (2)].`
+
+Metamorpher provides the `Metamorpher::Refactorer` and `Metamorpher::Mutator` modules for constructing classes that perform refactorings or mutations.
+
+To construct a refactorer, include the relevant module, specify a `pattern` and a `replacement`, and then call `refactor(src)`:
 
 ```ruby
 require "metamorpher"
@@ -420,10 +429,41 @@ class UnnecessaryConditionalRefactorer
   end
 end
 
-program = "a = if some_predicate then true else false end"
+program = "a = if some_predicate then true else false end; " \
+          "b = if another_predicate then true else false end"
 UnnecessaryConditionalRefactorer.new.refactor(program)
- # => "a = some_predicate"
+ # => "a = some_predicate; b = another_predicate"
 ```
+
+Similarly to construct a mutator, include the relevant module, specify a `pattern` and an array of `replacements`, and then call `mutate(src)`:
+
+```ruby
+require "metamorpher"
+
+class LessThanMutator
+  include Metamorpher::Mutator
+  include Metamorpher::Builders::Ruby
+
+  def pattern
+    builder.build("A < B")
+  end
+
+  def replacements
+    builder.build_all("A > B", "A == B")
+  end
+end
+
+program = "a = foo < bar; b = bar < baz"
+LessThanMutator.new.mutate(program)
+ # => [
+ #       "a = foo > bar; b = bar < baz",
+ #       "a = foo == bar; b = bar < baz",
+ #       "a = foo < bar; b = bar > baz",
+ #      "a = foo < bar; b = bar == baz"
+ #    ]
+```
+
+The remainder of this section discusses only refactorers, but note that mutators have all of the same functionality as refactorers (but provides methods prefixed with `mutate` rather than `refactor`).
 
 The `refactor` method can optionally take a block, which is called immediately before the matching code is replaced with the refactored code:
 
@@ -445,11 +485,11 @@ The `Metamorpher::Refactorer` module also defines a `refactor_file(path)` method
 
 ```ruby
 path = File.expand_path("refactorable.rb", "/Users/louis/code/mutiny")
- # => "/Users/louis/code/mutiny/refactorable.rb" 
+ # => "/Users/louis/code/mutiny/refactorable.rb"
 
 UnnecessaryConditionalRefactorer.new.refactor_file(path)
  # => ... (refactored code)
- 
+
 UnnecessaryConditionalRefactorer.new.refactor_file(path) do |refactoring|
   # works just like the block passed to refactor
 end
@@ -460,7 +500,7 @@ You might prefer the `refactor_files(paths)` method, if you'd like to refactor s
 
 ```ruby
 paths = Dir.glob(File.expand_path(File.join("**", "*.rb"), "/Users/louis/code/mutiny"))
- # => ["/Users/louis/code/mutiny/lib/mutiny.rb", ...] 
+ # => ["/Users/louis/code/mutiny/lib/mutiny.rb", ...]
 
  # Note that refactor_files returns a Hash rather than a String
 UnnecessaryConditionalRefactorer.new.refactor_files(paths)
@@ -489,22 +529,22 @@ By default, `Metamorpher::Refactorer` assumes that you wish to refactor Ruby pro
 ```ruby
 class JavaRefactorer
   include Metamorpher::Refactorer
-  
+
   def driver
     YourTool::MetamorpherDrivers::Java.new
   end
-  
+
   def pattern
     ...
   end
-  
+
   def replacement
     ...
   end
 end
 ```
 
-#### Examples 
+#### Examples
 
 Below are a few examples of using metamorpher to perform refactorings on Ruby code.
 
@@ -558,21 +598,21 @@ class RefactorWhereFirstToFindBy
        builder.build(create_hash_string(keys, values))
      end
   end
-  
+
   private
-  
+
   # Extracts an array of attributes from the name of a dynamic
   # finder, such as find_by_asset_id_and_object_path.
   def attributes_from_dynamic_finder(dynamic_finder)
     dynamic_finder["find_by_".length..-1].split("_and_")
   end
-  
+
   # Builds a string representation of a hash from a set of keys
   # and a corresponding set of values
   def create_hash_string(keys, values)
     "{" + create_pairs_string(keys, values) + "}"
   end
-  
+
   def create_pairs_string(keys, values)
     keys
      .zip(values)
