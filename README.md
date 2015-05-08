@@ -404,10 +404,13 @@ Transformers are [rewriters](#rewriters) that are specialised for rewriting prog
 
 Metamorpher provides two types of transformers:
 
-* Refactorers - refactorers produce a single transformed program in which all occurrences of a pattern are replaced
-* Mutators - mutators produce a set of transformed programs where each program has a single occurrence of a pattern is replaced
+* Refactorer - produces a single transformed program that contains all rewritings together
+* Mutator - produces a set of transformed programs where each program contains a single rewriting
 
-For example, for the pattern `1 + 1` and the replacement `2`, a refactorer applied to `(1 + 1) * (1 + 1)` will produce `(2) * (2)` whereas a mutator will produce `[(2) * (1 + 1), (1 + 1) * (2)].`
+For example, for the pattern `1 + 1`, the replacement `2` and the input program `(1 + 1) * (1 + 1)`:
+
+* A refactorer will produce `(2) * (2)`
+* A mutator will produce `[(2) * (1 + 1), (1 + 1) * (2)].`
 
 Metamorpher provides the `Metamorpher::Refactorer` and `Metamorpher::Mutator` modules for constructing classes that perform refactorings or mutations.
 
