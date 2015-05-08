@@ -1,7 +1,7 @@
 # Release History
 
 ## v0.2.0 (9 May 2015)
-* Provide support for mutators which are similar to refactorers but produce multiple transformed programs
+* Provide support for mutators, which are similar to refactorers but produce multiple transformed programs
 
 ## v0.1.1 (8 May 2015)
 * Update dependencies
