@@ -11,11 +11,5 @@ module Metamorpher
     def merge(src, replacements, &block)
       Transformer::Merger.new(src).merge(*replacements, &block)
     end
-
-    private
-
-    def replacements
-      @replacements ||= [replacement]
-    end
   end
 end

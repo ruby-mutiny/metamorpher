@@ -8,6 +8,10 @@ module Metamorpher
       def inspect
         "TermSet" + terms.inspect
       end
+
+      def alternatives
+        terms
+      end
     end
   end
 end

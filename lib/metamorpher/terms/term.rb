@@ -20,6 +20,10 @@ module Metamorpher
         name
       end
 
+      def alternatives
+        [self]
+      end
+
       def path
         if parent
           parent.path << parent.children.index { |c| c.equal?(self) }

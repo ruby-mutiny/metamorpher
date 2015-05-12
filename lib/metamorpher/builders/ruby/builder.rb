@@ -2,17 +2,15 @@ require "metamorpher/drivers/ruby"
 require "metamorpher/builders/ruby/term"
 require "metamorpher/builders/ruby/uppercase_constant_rewriter"
 require "metamorpher/builders/ruby/uppercase_rewriter"
+require "metamorpher/terms/term_set"
 
 module Metamorpher
   module Builders
     module Ruby
       class Builder
-        def build(source)
-          decorate(rewrite(parse(source)))
-        end
-
-        def build_all(*sources)
-          sources.map(&method(:build))
+        def build(*sources)
+          terms = sources.map { |source| decorate(rewrite(parse(source))) }
+          terms.size == 1 ? terms.first : Metamorpher::Terms::TermSet.new(terms: terms)
         end
 
         private

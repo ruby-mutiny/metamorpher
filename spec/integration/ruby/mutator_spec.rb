@@ -11,8 +11,8 @@ describe "Mutator" do
         builder.build("A < B")
       end
 
-      def replacements
-        builder.build_all("A > B", "A == B")
+      def replacement
+        builder.build("A > B", "A == B")
       end
     end
 
@@ -33,13 +33,13 @@ describe "Mutator" do
         "end",
 
         "def compare\n" \
-        "  foo < bar\n" \
-        "  bar > baz\n" \
+        "  foo == bar\n" \
+        "  bar < baz\n" \
         "end",
 
         "def compare\n" \
-        "  foo == bar\n" \
-        "  bar < baz\n" \
+        "  foo < bar\n" \
+        "  bar > baz\n" \
         "end",
 
         "def compare\n" \
@@ -52,7 +52,7 @@ describe "Mutator" do
     let(:not_mutatable) { "foo == bar" }
 
     describe "by calling mutate" do
-      describe "for code that can be mutated"do
+      describe "for code that can be mutated" do
         it "should return the mutated code" do
           expect(subject.mutate(mutatable)).to eq(mutated)
         end
@@ -60,8 +60,8 @@ describe "Mutator" do
         it "should yield for each mutation site" do
           expect { |b| subject.mutate(mutatable, &b) }.to yield_successive_args(
             site_for(14..22, "foo < bar", "foo > bar"),
-            site_for(26..34, "bar < baz", "bar > baz"),
             site_for(14..22, "foo < bar", "foo == bar"),
+            site_for(26..34, "bar < baz", "bar > baz"),
             site_for(26..34, "bar < baz", "bar == baz")
           )
         end
@@ -89,8 +89,8 @@ describe "Mutator" do
         it "should yield for each mutating site" do
           expect { |b| subject.mutate_file(mutatable_file, &b) }.to yield_successive_args(
             site_for(14..22, "foo < bar", "foo > bar"),
-            site_for(26..34, "bar < baz", "bar > baz"),
             site_for(14..22, "foo < bar", "foo == bar"),
+            site_for(26..34, "bar < baz", "bar > baz"),
             site_for(26..34, "bar < baz", "bar == baz")
           )
         end
@@ -155,8 +155,8 @@ describe "Mutator" do
           mutated,
           [
             site_for(14..22, "foo < bar", "foo > bar"),
-            site_for(26..34, "bar < baz", "bar > baz"),
             site_for(14..22, "foo < bar", "foo == bar"),
+            site_for(26..34, "bar < baz", "bar > baz"),
             site_for(26..34, "bar < baz", "bar == baz")
           ]
         ]
@@ -166,8 +166,8 @@ describe "Mutator" do
           mutated,
           [
             site_for(14..22, "foo < bar", "foo > bar"),
-            site_for(26..34, "bar < baz", "bar > baz"),
             site_for(14..22, "foo < bar", "foo == bar"),
+            site_for(26..34, "bar < baz", "bar > baz"),
             site_for(26..34, "bar < baz", "bar == baz")
           ]
         ]

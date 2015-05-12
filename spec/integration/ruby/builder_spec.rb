@@ -122,4 +122,22 @@ describe Metamorpher.builder do
       expect(last_derived.base).to eq([:last])
     end
   end
+
+  describe "when building with alternatives" do
+    it "should produce a termset" do
+      actual = subject.build("1 + 1", "LEFT + RIGHT")
+
+      expected_literals = ast_builder.literal!(:send, ast_builder.int(1), :+, ast_builder.int(1))
+      expected_variables = ast_builder.literal!(:send, ast_builder.LEFT, :+, ast_builder.RIGHT)
+      expected = ast_builder.either!(expected_literals, expected_variables)
+
+      expect(actual).to eq(expected)
+    end
+
+    it "should raise for invalid source" do
+      silence_stream(STDERR) do
+        expect { subject.build("1 + ") }.to raise_error(Metamorpher::Drivers::ParseError)
+      end
+    end
+  end
 end

@@ -32,19 +32,19 @@ module Metamorpher
 
       def reduce_to_replacements(src, literal)
         [].tap do |replacements|
-          rules.each do |rule| # FIXME : change to inject?
-            rule.reduce(literal) do |original, rewritten|
-              original_position = driver.source_location_for(original)
-              original_code = src[original_position]
-              transformed_code = driver.unparse(rewritten)
-              replacements << Site.new(original_position, original_code, transformed_code)
+          rule.reduce(literal) do |original, rewritings|
+            original_position = driver.source_location_for(original)
+            original_code = src[original_position]
+
+            rewritings.alternatives.each do |rewriting|
+              replacements << Site.new(original_position, original_code, driver.unparse(rewriting))
             end
           end
         end
       end
 
-      def rules
-        @rules ||= replacements.map { |r| Rewriter::Rule.new(pattern: pattern, replacement: r) }
+      def rule
+        @rule ||= Rewriter::Rule.new(pattern: pattern, replacement: replacement)
       end
     end
   end
