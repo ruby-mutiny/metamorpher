@@ -53,6 +53,7 @@ The primary data structure used for [rewriting](#rewriters) and for [matching](#
 * Variable - a named node, which is bound to a subterm (subtree) during [matching](#matchers).
 * Greedy variable - a variable that is bound to a set of subterms during [matching](#matchers).
 * Derivation - a placeholder node, which is replaced during [rewriting](#rewriters).
+* Term Set - a collection of terms (potentially of mixed types)
 
 To simplify the construction of terms, metamorpher provides the `Metamorpher::Builders::AST::Builder` class, which is demonstrated below.
 
@@ -76,6 +77,9 @@ builder.derivation! :key, :value do |key, value, builder|
   builder.pair(key, value)
 end
  # [KEY, VALUE] -> ...
+
+ builder.either! builder.literal!(:succ), builder.variable!(:n)
+ # TermSet[succ, N]
 ```
 
 Variables can be conditional, in which case they are specified by passing a block:
@@ -104,11 +108,12 @@ builder.PAIRS_ { |literal| literal.name =~ /^find_by_/ } #=> PAIRS+?
 
 #### Coercion of non-terms to literals
 
-When constructing a literal, the builder ensures that any children are converted to literals if they are not already a term:
+When constructing a literal or a term set, the builder ensures that any children are converted to literals if they are not already a term:
 
 ```ruby
 builder.literal!(:add, :x, :y) # => add(x, y)
 builder.add(:x, :y) # => add(x, y)
+builder.either!(:add, :subtract) # => TermSet[add, subtract]
 ```
 
 Without automatic coercion, the statements above would be written as follows. Note that they are more verbose:
@@ -116,6 +121,7 @@ Without automatic coercion, the statements above would be written as follows. No
 ```ruby
 builder.literal!(:add, builder.literal!(:x), builder.literal!(:y)) # => add(x, y)
 builder.add(builder.x, builder.y) # => add(x, y)
+builder.either!(builder.add, builder.subtract) # => TermSet[add, subtract]
 ```
 
 Note that coercion isn't necessary (and isn't applied) when the children of a literal are already terms:
@@ -123,6 +129,7 @@ Note that coercion isn't necessary (and isn't applied) when the children of a li
 ```ruby
 builder.literal!(:add, builder.variable!(:n), builder.variable!(:m)) # => add(N, M)
 builder.add(builder.N, builder.M) # => add(N, M)
+builder.either!(builder.N, builder.M) # => TermSet[N, M]
 ```
 
 ### Matchers
@@ -133,6 +140,9 @@ Metamorpher provides the `Metamorpher::Matcher` module for specifying matchers. 
 
 ```ruby
 require "metamorpher"
+
+# Use the AST builder
+Metamorpher.configure(:ast)
 
 class SuccZeroMatcher
   include Metamorpher::Matcher
@@ -152,6 +162,33 @@ expression = Metamorpher.builder.succ(1) # => succ(1)
 result = SuccZeroMatcher.new.run(expression)
  # => <Metamorpher::Matcher::NoMatch>
 result.matches? # => false
+```
+
+#### Alternatives
+
+Matching can search for several expressions to match at a time. Metamorpher provides TermSets for this purpose. Recall that TermSets are built using `builder.either!`
+
+For example, we can extend our previous matcher to search for the expressions `succ(0)` and `pred(2)` at the same time.
+
+```ruby
+class VerboseOneMatcher
+  include Metamorpher::Matcher
+  include Metamorpher::Builders::AST
+
+  def pattern
+    builder.either!(builder.succ(0), builder.pred(2))
+  end
+end
+
+expression = Metamorpher.builder.succ(0) # => succ(0)
+result = VerboseOneMatcher.new.run(expression)
+ # => <Metamorpher::Matcher::Match root=succ(0), substitution={}>
+result.matches? # => true
+
+expression = Metamorpher.builder.pred(2) # => pred(2)
+result = VerboseOneMatcher.new.run(expression)
+ # => <Metamorpher::Matcher::Match root=pred(2), substitution={}>
+result.matches? # => true
 ```
 
 #### Variables
@@ -452,7 +489,7 @@ class LessThanMutator
   end
 
   def replacements
-    builder.build_all("A > B", "A == B")
+    builder.build("A > B", "A == B")
   end
 end
 
