@@ -82,6 +82,33 @@ describe "Rewriting" do
     end
   end
 
+  describe "multiple rewritings via termset" do
+    class FlexiblePluraliseRewriter
+      include Metamorpher::Rewriter
+      include Metamorpher::Builders::AST
+
+      def pattern
+        builder.SINGULAR
+      end
+
+      def replacement
+        builder.either!(
+          builder.derivation!(:singular) { |singular| builder.literal!(singular.name + "s") },
+          builder.derivation!(:singular) { |singular| builder.literal!(singular.name + "es") }
+        )
+      end
+    end
+
+    subject { FlexiblePluraliseRewriter.new }
+
+    it "should rewrite using each derivation" do
+      expression = builder.literal! "virus"
+      reduced = builder.either!(builder.literal!("viruss"), builder.literal!("viruses"))
+
+      expect(subject.reduce(expression)).to eq(reduced)
+    end
+  end
+
   describe "derivations" do
     describe "from a single variable" do
       class PluraliseRewriter
@@ -135,8 +162,8 @@ describe "Rewriting" do
       end
     end
 
-    describe "multiple rewritings via termset" do
-      class FlexiblePluraliseRewriter
+    describe "to several alternatives" do
+      class FlexiblePluraliseRewriterInner
         include Metamorpher::Rewriter
         include Metamorpher::Builders::AST
 
@@ -145,14 +172,16 @@ describe "Rewriting" do
         end
 
         def replacement
-          builder.either!(
-            builder.derivation!(:singular) { |singular| builder.literal!(singular.name + "s") },
-            builder.derivation!(:singular) { |singular| builder.literal!(singular.name + "es") }
-          )
+          builder.derivation!(:singular) do |singular|
+            builder.either!(
+              builder.literal!(singular.name + "s"),
+              builder.literal!(singular.name + "es")
+            )
+          end
         end
       end
 
-      subject { FlexiblePluraliseRewriter.new }
+      subject { FlexiblePluraliseRewriterInner.new }
 
       it "should rewrite using each derivation" do
         expression = builder.literal! "virus"
