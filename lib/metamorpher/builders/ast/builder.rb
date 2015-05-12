@@ -1,3 +1,4 @@
+require "metamorpher/terms/term_set"
 require "metamorpher/builders/ast/literal_builder"
 require "metamorpher/builders/ast/variable_builder"
 require "metamorpher/builders/ast/greedy_variable_builder"
@@ -13,6 +14,10 @@ module Metamorpher
         def_delegator :variable_builder, :variable!
         def_delegator :greedy_variable_builder, :greedy_variable!
         def_delegator :derivation_builder, :derivation!
+
+        def either!(*terms)
+          Terms::TermSet.new(terms: terms)
+        end
 
         def method_missing(method, *arguments, &block)
           builders_with_shorthand

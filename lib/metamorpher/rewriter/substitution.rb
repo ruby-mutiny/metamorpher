@@ -31,6 +31,12 @@ module Metamorpher
         derived.derivation.call(*substitutes)
       end
 
+      def visit_termset(termset)
+        Terms::TermSet.new(
+          terms: termset.terms.map { |term| visit(term) }
+        )
+      end
+
       private
 
       def substitution_for_variable(name)

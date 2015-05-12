@@ -41,6 +41,15 @@ module Metamorpher
         end
       end
 
+      def visit_termset(termset)
+        matches = termset.terms.map { |term| term.match(other) }.select(&:matches?)
+        if matches.any?
+          matches.first
+        else
+          Matcher::NoMatch.new
+        end
+      end
+
       def visit_derived(_derived)
         fail MatchingError, "Cannot match against a derived variable."
       end

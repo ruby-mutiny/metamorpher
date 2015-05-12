@@ -129,4 +129,64 @@ describe "Matching" do
       expect(subject.run(expression)).not_to have_matched
     end
   end
+
+  describe "alternatives" do
+    class CalculatorOperatorMatcher
+      include Metamorpher::Matcher
+      include Metamorpher::Builders::AST
+
+      def pattern
+        builder.either!(
+          builder.add(builder.ARGS_),
+          builder.subtract(builder.ARGS_),
+          builder.clear
+        )
+      end
+    end
+
+    subject { CalculatorOperatorMatcher.new }
+
+    it "should return a match for matching add expressions" do
+      expressions = [
+        builder.add(1),
+        builder.add(1, 2),
+        builder.add(1, 2, 3),
+        builder.add(1, builder.succ(:n), 2)
+      ]
+
+      expressions.each do |expression|
+        expect(subject.run(expression)).to have_matched(expression)
+      end
+    end
+
+    it "should return a match for matching subtract expressions" do
+      expressions = [
+        builder.subtract(1),
+        builder.subtract(1, 2),
+        builder.subtract(1, 2, 3),
+        builder.subtract(1, builder.succ(:n), 2)
+      ]
+
+      expressions.each do |expression|
+        expect(subject.run(expression)).to have_matched(expression)
+      end
+    end
+
+    it "should return a match for matching clear expression" do
+      expect(subject.run(builder.clear)).to have_matched(builder.clear)
+    end
+
+    it "should return no match for near misses" do
+      expressions = [
+        builder.add,
+        builder.subtract,
+        builder.empty,
+        builder.multiply(1, 2, 3)
+      ]
+
+      expressions.each do |expression|
+        expect(subject.run(expression)).not_to have_matched(expression)
+      end
+    end
+  end
 end

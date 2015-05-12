@@ -217,6 +217,25 @@ module Metamorpher
         end
       end
 
+      describe TermSet do
+        let(:first) { Literal.new(name: :first) }
+        let(:second) { Literal.new(name: :second) }
+
+        subject { TermSet.new(terms: [first, second]) }
+
+        it "should match when a child matches" do
+          matchee = Literal.new(name: :second)
+
+          expect(subject.match(matchee)).to have_matched(matchee)
+        end
+
+        it "should not match when no child matches" do
+          matchee = Literal.new(name: :third)
+
+          expect(subject.match(matchee)).not_to have_matched
+        end
+      end
+
       describe Derived do
         it "should raise" do
           root = Derived.new

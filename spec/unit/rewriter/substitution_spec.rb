@@ -93,5 +93,25 @@ module Metamorpher
         end
       end
     end
+
+    describe TermSet do
+      let(:first_child) { Variable.new(name: :type) }
+
+      let(:second_child) do
+        Derived.new(
+          base: [:type],
+          derivation: -> (type) { Literal.new(name: type.name.reverse) }
+        )
+      end
+
+      subject { TermSet.new(terms: [first_child, second_child]) }
+
+      it "should perform substitution on each child" do
+        substitution = { type: Literal.new(name: "sub") }
+        expected = TermSet.new(terms: [Literal.new(name: "sub"), Literal.new(name: "sub".reverse)])
+
+        expect(subject.substitute(substitution)).to eq(expected)
+      end
+    end
   end
 end
