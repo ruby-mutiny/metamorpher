@@ -53,7 +53,7 @@ The primary data structure used for [rewriting](#rewriters) and for [matching](#
 * Variable - a named node, which is bound to a subterm (subtree) during [matching](#matchers).
 * Greedy variable - a variable that is bound to a set of subterms during [matching](#matchers).
 * Derivation - a placeholder node, which is replaced during [rewriting](#rewriters).
-* Term Set - a collection of terms (potentially of mixed types)
+* Term Set - a collection of terms (potentially of mixed types).
 
 To simplify the construction of terms, metamorpher provides the `Metamorpher::Builders::AST::Builder` class, which is demonstrated below.
 
@@ -389,6 +389,7 @@ Recall that term is a tree (i.e., an acyclic graph), whose nodes are either a:
 * Variable - a named node, which is bound to a subterm (subtree) during [matching](#matchers).
 * Greedy variable - a variable that is bound to a set of subterms during [matching](#matchers).
 * Derivation - a placeholder node, which is replaced during [rewriting](#rewriters).
+* Term Set - a collection of terms (potentially of mixed types).
 
 The following examples demonstrate the way in which terms can built from strings that resemble Ruby programs:
 
@@ -433,6 +434,12 @@ builder
     builder.build("[#{key}, #{value}]")
   end
  # [KEY, VALUE] -> ...
+```
+
+To build a term sets, provide several arguments:
+
+```ruby
+builder.build("true", "false") # => TermSet[true, false]
 ```
 
 ### Transformers

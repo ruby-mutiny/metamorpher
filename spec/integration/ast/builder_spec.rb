@@ -11,5 +11,5 @@ describe Metamorpher do
   it_behaves_like "a variable builder"
   it_behaves_like "a greedy variable builder"
   it_behaves_like "a derivation builder"
-  it_behaves_like "a builder that supports alternatives"
+  it_behaves_like "a term set builder"
 end

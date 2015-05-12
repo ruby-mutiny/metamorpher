@@ -5,7 +5,7 @@ module Metamorpher
     module AST
       class LiteralBuilder
         def literal!(name, *children)
-          Terms::Literal.new(name: name, children: children.map { |c| termify(c) })
+          Terms::Literal.new(name: name, children: children.map(&method(:termify)))
         end
 
         def shorthand?(method, *_arguments, &_block)
