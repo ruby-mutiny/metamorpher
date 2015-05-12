@@ -1,5 +1,8 @@
 # Release History
 
+## v0.2.1 (12 May 2015)
+* Provide support for term sets, which make it possible to match (or rewrite to) multiple expressions at once
+
 ## v0.2.0 (9 May 2015)
 * Provide support for mutators, which are similar to refactorers but produce multiple transformed programs
 
