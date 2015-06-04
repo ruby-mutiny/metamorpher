@@ -162,6 +162,32 @@ describe "Rewriting" do
       end
     end
 
+    describe "from entire value" do
+      class Inverter
+        include Metamorpher::Rewriter
+        include Metamorpher::Builders::AST
+
+        def pattern
+          builder.true
+        end
+
+        def replacement
+          builder.derivation!(:&) do |matched|
+            builder.literal!(:not, matched)
+          end
+        end
+      end
+
+      subject { Inverter.new }
+
+      it "should rewrite yielding the entire match to the derivation logic" do
+        expression = builder.literal! :true
+        reduced = builder.literal!(:not, :true)
+
+        expect(subject.reduce(expression)).to eq(reduced)
+      end
+    end
+
     describe "to several alternatives" do
       class FlexiblePluraliseRewriterInner
         include Metamorpher::Rewriter

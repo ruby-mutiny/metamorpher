@@ -23,9 +23,16 @@ module Metamorpher
 
       def rewrite(ast, match, &block)
         original = match.root
-        rewritten = replacement.substitute(match.substitution)
+        substitution = substitution_with_special_values(match)
+        rewritten = replacement.substitute(substitution)
         block.call(original, rewritten) if block
         ast.replace(original.path, rewritten)
+      end
+
+      def substitution_with_special_values(match)
+        match.substitution.dup.tap do |substitution|
+          substitution[:&] = match.root.dup # add the "whole match" special variable (&)
+        end
       end
 
       def matches_for(ast)
