@@ -373,6 +373,32 @@ builder.derivation! :key, :value do |key, value|
 end
 ```
 
+When deriving a variable's value without changing it, there's no need to supply a block:
+
+```ruby
+builder.derivation! :value
+# builder.derivation! :value { |value| value }
+```
+
+To obtain the entire match during a derivation, use the special variable `&`:
+
+```ruby
+class ReverseVariables
+  include Metamorpher::Rewriter
+  include Metamorpher::Builders::AST
+
+  def pattern
+    builder.literal!(:send, nil, builder.VAR)
+  end
+
+  def replacement
+    builder.derivation! :& do |match|
+      builder.literal(:send, match, :reverse)
+    end
+  end
+end
+```
+
 ## Practicalities
 
 Metamorpher provides modules that can be used to simplify the transformation of Ruby programs. This section describes how to build metamorpher terms that represent Ruby programs, and how to refactor Ruby programs. [Matchers](#matchers) and [Rewriters](#rewriters) can be used to manipulate Ruby programs too.

@@ -1,5 +1,9 @@
 # Release History
 
+## v0.2.2 (4 June 2015)
+* Provide whole match special variable (&) for derivations
+* Provide sensible default logic (derive the value of their first argument) for derivations
+
 ## v0.2.1 (12 May 2015)
 * Provide support for term sets, which make it possible to match (or rewrite to) multiple expressions at once
 
