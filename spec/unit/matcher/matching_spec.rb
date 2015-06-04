@@ -3,7 +3,7 @@ require "metamorpher/terms/literal"
 require "metamorpher/terms/derived"
 
 module Metamorpher
-  module Terms
+  module Terms # rubocop:disable Metrics/ModuleLength
     describe Variable do
       let(:root) do
         Literal.new(

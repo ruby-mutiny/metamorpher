@@ -5,7 +5,8 @@ module Metamorpher
         attr_accessor :variable_name, :replacement
 
         def initialize(variable_name, replacement)
-          @variable_name, @replacement = variable_name, replacement
+          @variable_name = variable_name
+          @replacement = replacement
         end
 
         def visit_literal(literal)

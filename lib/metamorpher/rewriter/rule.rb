@@ -22,7 +22,8 @@ module Metamorpher
       end
 
       def rewrite(ast, match, &block)
-        original, rewritten = match.root, replacement.substitute(match.substitution)
+        original = match.root
+        rewritten = replacement.substitute(match.substitution)
         block.call(original, rewritten) if block
         ast.replace(original.path, rewritten)
       end
