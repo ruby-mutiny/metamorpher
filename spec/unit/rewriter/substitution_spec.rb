@@ -36,6 +36,16 @@ module Metamorpher
       it "should raise if the substitution contains no value for variable's name" do
         expect { subject.substitute({}) }.to raise_error(Rewriter::SubstitutionError)
       end
+
+      context "default derivations" do
+        it "should be the identity function for a single parameter" do
+          subject = Derived.new(base: [:type])
+          literal = Literal.new(name: :foo)
+          substitution = { type: literal }
+
+          expect(subject.substitute(substitution)).to eq(literal)
+        end
+      end
     end
 
     describe Literal do

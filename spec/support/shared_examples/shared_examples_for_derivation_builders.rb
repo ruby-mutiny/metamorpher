@@ -14,9 +14,20 @@ module Metamorpher
         end
 
         it "should capture all arguments as the base" do
-          built = subject.derivation!(:key, :value) {}
+          built = subject.derivation!(:key, :value)
 
           expect(built.base).to eq([:key, :value])
+        end
+
+        it "should derive the first argument if no block is passed" do
+          built = subject.derivation!(:key, :value)
+
+          derived = built.derivation.call(
+            Literal.new(name: :dog),
+            Literal.new(name: :lassie)
+          )
+
+          expect(derived).to eq(Literal.new(name: :dog))
         end
 
         it "should provide a builder for use in the block" do
@@ -42,10 +53,6 @@ module Metamorpher
 
         it "should raise if no arguments are passed" do
           expect { subject.derivation! { nil } }.to raise_error(ArgumentError)
-        end
-
-        it "should raise if no block is passed" do
-          expect { subject.derivation!(:method) }.to raise_error(ArgumentError)
         end
       end
     end

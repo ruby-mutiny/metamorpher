@@ -190,5 +190,29 @@ describe "Rewriting" do
         expect(subject.reduce(expression)).to eq(reduced)
       end
     end
+
+    describe "using implicit derivation" do
+      class KeyExtractor
+        include Metamorpher::Rewriter
+        include Metamorpher::Builders::AST
+
+        def pattern
+          builder.literal!(:"=>", builder.KEY, builder.VALUE)
+        end
+
+        def replacement
+          builder.derivation!(:key)
+        end
+      end
+
+      subject { KeyExtractor.new }
+
+      it "should rewrite using the implicit derivation" do
+        expression = builder.literal! :"=>", :foo, :bar
+        reduced = builder.literal! :foo
+
+        expect(subject.reduce(expression)).to eq(reduced)
+      end
+    end
   end
 end

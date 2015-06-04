@@ -7,12 +7,21 @@ module Metamorpher
       class DerivationBuilder
         def derivation!(*base, &block)
           fail ArgumentError, "wrong number of arguments (0)" if base.empty?
-          fail ArgumentError, "a block must be provided" if block.nil?
 
           Terms::Derived.new(
             base: base,
-            derivation: ->(*args) { block.call(*args, Builder.new) }
+            derivation: derivation_strategy(block)
           )
+        end
+
+        private
+
+        def derivation_strategy(block)
+          if block.nil?
+            ->(*args) { args.first }
+          else
+            ->(*args) { block.call(*args, Builder.new) }
+          end
         end
       end
     end
