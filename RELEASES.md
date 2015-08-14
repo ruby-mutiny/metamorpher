@@ -1,5 +1,8 @@
 # Release History
 
+## v0.2.3 (14 August 2015)
+* Prefer `Site#transformed_code` to `Site#refactored_code` as the latter is odd when a Site is produced during a mutation rather than a refactoring.
+
 ## v0.2.2 (4 June 2015)
 * Provide whole match special variable (&) for derivations
 * Provide sensible default logic (derive the value of their first argument) for derivations
