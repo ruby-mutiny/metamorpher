@@ -12,7 +12,7 @@ module Metamorpher
 
         it "should not alter the code" do
           expect(subject.slide(2).original_code).to eq("foo")
-          expect(subject.slide(2).refactored_code).to eq("bar")
+          expect(subject.slide(2).transformed_code).to eq("bar")
         end
 
         it "should be chainable" do

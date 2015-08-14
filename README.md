@@ -547,7 +547,7 @@ source = "a = if some_predicate then true else false end;" \
 UnnecessaryConditionalRefactorer.new.refactor(source) do |refactoring|
   puts "About to replace '#{refactoring.original_code}' " \
        "at position #{refactoring.original_position} " \
-       "with '#{refactoring.refactored_code}'"
+       "with '#{refactoring.transformed_code}'"
 end
  # About to replace 'if some_predicate then true else false end' at position 4..45 with 'some_predicate'
  # About to replace 'if some_other_predicate then true else false end' at position 51..98 with 'some_other_predicate'
@@ -586,7 +586,7 @@ UnnecessaryConditionalRefactorer.new.refactor_files(path) do |path, new_contents
   sites.each do |site|
     puts "\tAbout to replace '#{refactoring.original_code}' " \
          "at position #{refactoring.original_position} " \
-         "with '#{refactoring.refactored_code}'"
+         "with '#{refactoring.transformed_code}'"
   end
 end
  # In /Users/louis/code/mutiny/lib/mutiny.rb:
