@@ -1,5 +1,8 @@
 # Release History
 
+## v0.2.4 (23 February 2016)
+* Fix bug in computing the paths of terms that contain term sets.
+
 ## v0.2.3 (14 August 2015)
 * Prefer `Site#transformed_code` to `Site#refactored_code` as the latter is odd when a Site is produced during a mutation rather than a refactoring.
 
