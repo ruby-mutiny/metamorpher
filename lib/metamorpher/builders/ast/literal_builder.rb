@@ -23,7 +23,7 @@ module Metamorpher
         private
 
         def termify(item)
-          item.is_a?(Terms::Term) ? item : literal!(item)
+          item.is_a?(Terms::Term) ? item.dup : literal!(item)
         end
       end
     end

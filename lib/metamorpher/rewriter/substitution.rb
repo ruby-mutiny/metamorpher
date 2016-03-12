@@ -16,7 +16,7 @@ module Metamorpher
       end
 
       def visit_variable(variable)
-        substitution_for_variable(variable.name)
+        substitution_for_variable(variable.name).dup
       end
 
       def visit_literal(literal)

@@ -3,7 +3,7 @@ module Metamorpher
     module Replacement
       def replace(path, replacement)
         if path.empty?
-          replacement
+          replacement.dup
         else
           Terms::Literal.new(
             name: name,
