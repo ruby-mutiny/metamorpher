@@ -1,5 +1,8 @@
 # Release History
 
+## v0.2.5 (12 March 2016)
+* Fix bugs that caused mutators to have side-effects when applied to overlapping ASTs.
+
 ## v0.2.4 (23 February 2016)
 * Fix bug in computing the paths of terms that contain term sets.
 
