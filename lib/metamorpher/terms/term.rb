@@ -39,6 +39,33 @@ module Metamorpher
           [self]
         end
       end
+
+      def debug_print
+        root = self
+        root = root.parent while root.parent
+
+        debug_print_element(root)
+        puts "---"
+      end
+
+      def debug_print_element(current, depth = 0)
+        output = " " * depth
+        output += "#{current.name} (#{current.hash})"
+        output += " <---" if current == self
+        puts output
+        return if visited_elements.include?(current)
+        visited_elements << current
+
+        if respond_to? :children
+          children.each do |child|
+            debug_print_element(child, depth + 2)
+          end
+        end
+      end
+
+      def visited_elements
+        @visited_elements ||= []
+      end
     end
   end
 end
