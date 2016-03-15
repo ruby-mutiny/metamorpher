@@ -87,7 +87,7 @@ module Metamorpher
         end
       end
 
-      { "[]" => :array }.each do |ruby_literal, type|
+      { "[]" => :array, "{}" => :hash }.each do |ruby_literal, type|
         describe "for a program containing the '#{ruby_literal}' Ruby literal" do
           let(:source)  { "a = #{ruby_literal}" }
           let(:metamorpher_literal) { builder.lvasgn(:a, type) }
