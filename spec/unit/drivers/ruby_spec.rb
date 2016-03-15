@@ -86,6 +86,34 @@ module Metamorpher
           end
         end
       end
+
+      { "[]" => :array }.each do |ruby_literal, type|
+        describe "for a program containing the '#{ruby_literal}' Ruby literal" do
+          let(:source)  { "a = #{ruby_literal}" }
+          let(:metamorpher_literal) { builder.lvasgn(:a, type) }
+
+          it "should parse to the correct metamorpher literal" do
+            expect(subject.parse(source)).to eq(metamorpher_literal)
+          end
+
+          it "should unparse to the correct source" do
+            expect(subject.unparse(metamorpher_literal)).to eq(source)
+          end
+        end
+
+        describe "for a program that is the '#{ruby_literal}' Ruby literal" do
+          let(:source)  { ruby_literal }
+          let(:metamorpher_literal) { builder.literal! type }
+
+          it "should parse to the correct metamorpher literal" do
+            expect(subject.parse(source)).to eq(metamorpher_literal)
+          end
+
+          it "should unparse to the correct source" do
+            expect(subject.unparse(metamorpher_literal)).to eq(source)
+          end
+        end
+      end
     end
   end
 end

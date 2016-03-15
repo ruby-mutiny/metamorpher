@@ -59,7 +59,7 @@ module Metamorpher
         # omitting a necessary keyword. Note that these are the symbols produced
         # by Parser which are not necessarily the same as Ruby keywords (e.g.,
         # Parser sometimes produces a :zsuper node for a program of the form "super")
-        @keywords ||= %i(nil false true self)
+        @keywords ||= %i(nil false true self array)
       end
 
       def ast_for(literal)
