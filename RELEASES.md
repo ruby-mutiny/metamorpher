@@ -1,5 +1,8 @@
 # Release History
 
+## v0.2.6 (15 March 2016)
+* Fix bugs in unparsing Ruby programs containing `[]` and `{}` literals.
+
 ## v0.2.5 (12 March 2016)
 * Fix bugs that caused mutators to have side-effects when applied to overlapping ASTs.
 
